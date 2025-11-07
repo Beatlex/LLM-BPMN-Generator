@@ -1,0 +1,154 @@
+{
+  "metadata": {
+    "processId": "exampleProcess",
+    "name": "Example BPMN Process"
+  },
+
+  "pools": [
+    {
+      "id": "pool1",
+      "name": "Main Pool",
+      "lanes": [
+        {
+          "id": "lane1",
+          "name": "Customer"
+        },
+        {
+          "id": "lane2",
+          "name": "Store Assistant"
+        },
+        {
+          "id": "lane3",
+          "name": "Warehouse"
+        }
+      ]
+    }
+  ],
+
+  "elements": [
+    {
+      "id": "start1",
+      "type": "startEvent",
+      "eventDefinition": "none",
+      "lane": "lane1",
+      "name": "Start"
+    },
+    {
+      "id": "msgEvt1",
+      "type": "intermediateCatchEvent",
+      "eventDefinition": "message",
+      "lane": "lane1",
+      "name": "Message Received"
+    },
+    {
+      "id": "timerEvt1",
+      "type": "intermediateCatchEvent",
+      "eventDefinition": "timer",
+      "lane": "lane2",
+      "name": "Wait 10 minutes"
+    },
+    {
+      "id": "end1",
+      "type": "endEvent",
+      "eventDefinition": "none",
+      "lane": "lane1",
+      "name": "End"
+    },
+    {
+      "id": "task1",
+      "type": "task",
+      "taskType": "standard",
+      "lane": "lane2",
+      "name": "Take order"
+    },
+    {
+      "id": "task2",
+      "type": "task",
+      "taskType": "user",
+      "lane": "lane1",
+      "name": "Pay for object"
+    },
+    {
+      "id": "task3",
+      "type": "task",
+      "taskType": "service",
+      "lane": "lane3",
+      "name": "Look for object"
+    },
+    {
+      "id": "sub1",
+      "type": "subProcess",
+      "name": "Reusable Subprocess",
+      "lane": "lane2",
+      "loopType": "multiInstance"
+    },
+    {
+      "id": "gw1",
+      "type": "gateway",
+      "gatewayType": "exclusive",
+      "lane": "lane2"
+    },
+    {
+      "id": "gw2",
+      "type": "gateway",
+      "gatewayType": "parallel",
+      "lane": "lane3"
+    },
+    {
+      "id": "data1",
+      "type": "dataObject",
+      "name": "Order Data"
+    },
+    {
+      "id": "annot1",
+      "type": "textAnnotation",
+      "text": "10 min wait"
+    }
+  ],
+
+  "flows": {
+    "sequenceFlows": [
+      {
+        "id": "f1",
+        "source": "start1",
+        "target": "task1"
+      },
+      {
+        "id": "f2",
+        "source": "task1",
+        "target": "gw1"
+      },
+      {
+        "id": "f3",
+        "source": "gw1",
+        "target": "task2",
+        "condition": "Payment OK"
+      },
+      {
+        "id": "f4",
+        "source": "gw1",
+        "target": "msgEvt1",
+        "condition": "Payment Error"
+      },
+      {
+        "id": "f5",
+        "source": "task2",
+        "target": "end1"
+      }
+    ],
+    "messageFlows": [
+      {
+        "id": "m1",
+        "source": "task3",
+        "target": "task1"
+      }
+    ],
+    "associations": [
+      {
+        "id": "a1",
+        "source": "annot1",
+        "target": "task2"
+      }
+    ]
+  }
+}

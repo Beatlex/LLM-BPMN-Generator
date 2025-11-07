@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+  <process id="Process_1" name="Example BPMN Process" isExecutable="false">
+    <startEvent id="start1" name="Start"/>
+    <intermediateCatchEvent id="msgEvt1" name="Message Received"/>
+    <intermediateCatchEvent id="timerEvt1" name="Wait 10 minutes"/>
+    <endEvent id="end1" name="End"/>
+    <task id="task1" name="Take order"/>
+    <userTask id="task2" name="Pay for object"/>
+    <serviceTask id="task3" name="Look for object"/>
+    <task id="sub1" name="Reusable Subprocess"/>
+    <exclusiveGateway id="gw1" name="gateway"/>
+    <parallelGateway id="gw2" name="gateway"/>
+    <task id="data1" name="Order Data"/>
+    <task id="annot1" name="textAnnotation"/>
+    <sequenceFlow id="f1" sourceRef="start1" targetRef="task1"/>
+    <sequenceFlow id="f2" sourceRef="task1" targetRef="gw1"/>
+    <sequenceFlow id="f3" sourceRef="gw1" targetRef="task2"/>
+    <sequenceFlow id="f4" sourceRef="gw1" targetRef="msgEvt1"/>
+    <sequenceFlow id="f5" sourceRef="task2" targetRef="end1"/>
+  </process>
+</definitions>
