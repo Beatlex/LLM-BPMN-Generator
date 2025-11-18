@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7orbi1jay6mb"]
+
+[ext_resource type="Script" uid="uid://7ij3avj4p3vc" path="res://Assets/bpmn/nodes/flow_line_2d.gd" id="1_pmh77"]
+[ext_resource type="Texture2D" uid="uid://cjbhg664oew3q" path="res://Assets/bpmn/nodes/arrowhead.png" id="2_hadh3"]
+
+[node name="FlowLine2D" type="Node2D"]
+script = ExtResource("1_pmh77")
+
+[node name="Line2D" type="Line2D" parent="."]
+width = 3.0
+default_color = Color(0, 0, 0, 1)
+joint_mode = 1
+
+[node name="ArrowHead" type="Sprite2D" parent="."]
+position = Vector2(24, 0)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("2_hadh3")
+region_enabled = true
+region_rect = Rect2(41.480377, 7.525463, 113.45926, 150.47453)

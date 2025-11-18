@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://7n7wf7o0jf28"]
+
+[ext_resource type="Script" uid="uid://cxv8vffogcukh" path="res://Testing/TestFlowLine2D.gd" id="1_alp27"]
+[ext_resource type="PackedScene" uid="uid://d3p008xqba2lp" path="res://Assets/bpmn/events/StartEvent2D.tscn" id="1_evh1e"]
+[ext_resource type="PackedScene" uid="uid://cdu8h4mxpafr6" path="res://Assets/bpmn/tasks/TaskNode2D.tscn" id="2_alp27"]
+[ext_resource type="PackedScene" uid="uid://c7orbi1jay6mb" path="res://Assets/bpmn/nodes/FlowLine2D.tscn" id="3_oty8s"]
+
+[node name="TestFlowScene" type="Node2D"]
+scale = Vector2(0.99146533, 1)
+script = ExtResource("1_alp27")
+
+[node name="FlowLine2D" parent="." instance=ExtResource("3_oty8s")]
+position = Vector2(189.61833, -5)
+
+[node name="TaskNode2D" parent="." instance=ExtResource("2_alp27")]
+position = Vector2(446.81342, -2.3841858e-07)
+element_name = "Essens optionen werden Abgewogen"
+task_type = 0
+
+[node name="StartEvent2D" parent="." instance=ExtResource("1_evh1e")]

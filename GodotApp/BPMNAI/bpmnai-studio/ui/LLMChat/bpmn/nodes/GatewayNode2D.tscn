@@ -1,0 +1,85 @@
+[gd_scene load_steps=7 format=3 uid="uid://51uriv5hccnf"]
+
+[ext_resource type="Texture2D" uid="uid://bn43ppqclkvcv" path="res://Assets/bpmn/gateways/Gateway_Empty.png" id="1_kmtqt"]
+[ext_resource type="Texture2D" uid="uid://cjbhg664oew3q" path="res://Assets/bpmn/nodes/arrowhead.png" id="2_t46qg"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_t46qg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t46qg"]
+radius = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xldx8"]
+radius = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bu7s8"]
+radius = 2.0
+
+[node name="GatewayNode2d" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("PlaceholderTexture2D_t46qg")
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -150.0
+offset_right = 20.0
+offset_bottom = -127.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="GatewayEmpty" type="Sprite2D" parent="."]
+texture = ExtResource("1_kmtqt")
+
+[node name="GatewayOutputXAchse" type="Line2D" parent="."]
+scale = Vector2(1, 0.5)
+points = PackedVector2Array(95, 0, 156, 0)
+default_color = Color(0, 0, 0, 1)
+antialiased = true
+
+[node name="Area2D" type="Area2D" parent="GatewayOutputXAchse"]
+position = Vector2(156, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GatewayOutputXAchse/Area2D"]
+position = Vector2(-1, 0)
+scale = Vector2(1, 2)
+shape = SubResource("CircleShape2D_t46qg")
+
+[node name="GatewayOutputYAchse" type="Line2D" parent="."]
+scale = Vector2(0.5, 1)
+points = PackedVector2Array(0, 95, 0, 148)
+default_color = Color(0, 0, 0, 1)
+
+[node name="Area2D" type="Area2D" parent="GatewayOutputYAchse"]
+position = Vector2(0, 148)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GatewayOutputYAchse/Area2D"]
+scale = Vector2(1.7, 1)
+shape = SubResource("CircleShape2D_xldx8")
+
+[node name="GatewayInput" type="Line2D" parent="."]
+scale = Vector2(1, 0.5)
+points = PackedVector2Array(-112, 0, -163, 0)
+default_color = Color(0, 0, 0, 1)
+
+[node name="RightArrowIn" type="Sprite2D" parent="GatewayInput"]
+position = Vector2(-112, -2.0000002)
+scale = Vector2(0.2, 0.4)
+texture = ExtResource("2_t46qg")
+
+[node name="Area2D2" type="Area2D" parent="GatewayInput"]
+position = Vector2(-163, 0)
+
+[node name="Area2D" type="CollisionShape2D" parent="GatewayInput/Area2D2"]
+position = Vector2(-161, 0)
+scale = Vector2(1, 2)
+shape = SubResource("CircleShape2D_bu7s8")

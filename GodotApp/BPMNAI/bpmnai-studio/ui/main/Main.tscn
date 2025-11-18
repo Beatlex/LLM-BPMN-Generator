@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://c7532obgqknwy"]
+
+[ext_resource type="Script" uid="uid://bcigp3oerjv0r" path="res://ui/main/Main.gd" id="1_562yo"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_562yo")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="DiagramRoot" type="Node2D" parent="."]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="UIRoot" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+metadata/_edit_use_anchors_ = true

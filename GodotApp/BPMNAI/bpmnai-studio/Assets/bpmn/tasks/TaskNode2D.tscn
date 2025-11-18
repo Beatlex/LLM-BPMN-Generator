@@ -1,0 +1,69 @@
+[gd_scene load_steps=5 format=3 uid="uid://cdu8h4mxpafr6"]
+
+[ext_resource type="Script" uid="uid://cqopcw00afd0w" path="res://Assets/bpmn/tasks/TaskNode2D.gd" id="1_fpxuv"]
+[ext_resource type="Texture2D" uid="uid://cbkir58fndsoq" path="res://Assets/bpmn/tasks/Task_EmptyTemplate.png" id="2_sppjx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_t46qg"]
+radius = 1.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bu7s8"]
+radius = 2.0
+
+[node name="TaskNode2D" type="Node2D"]
+script = ExtResource("1_fpxuv")
+element_name = "Test LNO"
+task_type = 5
+
+[node name="TaskLogo" type="Sprite2D" parent="."]
+position = Vector2(2, 0)
+texture = ExtResource("2_sppjx")
+
+[node name="Label" type="Label" parent="."]
+z_index = 4
+z_as_relative = false
+y_sort_enabled = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -25.0
+offset_right = 20.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Output" type="Line2D" parent="."]
+position = Vector2(138.7037, 0)
+scale = Vector2(0.07407409, 0.5)
+points = PackedVector2Array(95, 0, 156, 0)
+default_color = Color(0, 0, 0, 1)
+antialiased = true
+
+[node name="OutputPort" type="Area2D" parent="Output"]
+position = Vector2(156, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Output/OutputPort"]
+position = Vector2(-1, 0)
+scale = Vector2(1, 2)
+shape = SubResource("CircleShape2D_t46qg")
+
+[node name="Input" type="Line2D" parent="."]
+position = Vector2(-137.94363, 0)
+scale = Vector2(0.09859172, 0.5)
+points = PackedVector2Array(-112, 0, -163, 0)
+default_color = Color(0, 0, 0, 1)
+
+[node name="InputPort" type="Area2D" parent="Input"]
+position = Vector2(-163, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Input/InputPort"]
+position = Vector2(0.14278984, 0)
+scale = Vector2(1, 2)
+shape = SubResource("CircleShape2D_bu7s8")

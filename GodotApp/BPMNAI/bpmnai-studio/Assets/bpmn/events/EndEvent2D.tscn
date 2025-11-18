@@ -1,0 +1,50 @@
+[gd_scene load_steps=4 format=3 uid="uid://ckgxtpcj6g6yn"]
+
+[ext_resource type="Script" uid="uid://blb5bdtt1sdq7" path="res://Assets/bpmn/events/EndEvent2D.gd" id="1_yw3ig"]
+[ext_resource type="Texture2D" uid="uid://ck6746cmqhxp6" path="res://Assets/bpmn/events/End_Event.png" id="2_poyfa"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_h1tgo"]
+radius = 15.44372
+
+[node name="EndEventNode2D" type="Node2D"]
+script = ExtResource("1_yw3ig")
+element_name = "Hunger Gestillt"
+
+[node name="EndEventLogo" type="Sprite2D" parent="."]
+texture = ExtResource("2_poyfa")
+
+[node name="Label" type="Label" parent="."]
+z_index = 4
+z_as_relative = false
+y_sort_enabled = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.0
+offset_top = 52.0
+offset_right = 63.0
+offset_bottom = 101.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Test LNO"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Input" type="Line2D" parent="."]
+position = Vector2(-21.760561, 0)
+scale = Vector2(0.1690141, 0.5)
+points = PackedVector2Array(-112, 0, -163, 0)
+default_color = Color(0, 0, 0, 1)
+
+[node name="InputPort" type="Area2D" parent="Input"]
+position = Vector2(-163, 0)
+
+[node name="Area2D" type="CollisionShape2D" parent="Input/InputPort"]
+position = Vector2(1.8333588, 0)
+scale = Vector2(0.29830834, 0.5362802)
+shape = SubResource("CircleShape2D_h1tgo")

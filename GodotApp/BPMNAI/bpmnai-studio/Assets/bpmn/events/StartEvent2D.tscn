@@ -1,0 +1,50 @@
+[gd_scene load_steps=4 format=3 uid="uid://d3p008xqba2lp"]
+
+[ext_resource type="Script" uid="uid://bgknfg25nb50q" path="res://Assets/bpmn/events/StartEvent2D.gd" id="1_2n8pb"]
+[ext_resource type="Texture2D" uid="uid://c5mmxxvswe5ke" path="res://Assets/bpmn/events/Start_event.png" id="2_sq36b"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2n8pb"]
+
+[node name="StartEventNode2D" type="Node2D"]
+script = ExtResource("1_2n8pb")
+element_name = "Hunger kommt auf."
+
+[node name="StartLogo" type="Sprite2D" parent="."]
+texture = ExtResource("2_sq36b")
+
+[node name="Label" type="Label" parent="."]
+z_index = 4
+z_as_relative = false
+y_sort_enabled = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.0
+offset_top = 52.0
+offset_right = 63.0
+offset_bottom = 101.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Test LNO"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Output" type="Line2D" parent="."]
+position = Vector2(39.753086, 0)
+scale = Vector2(0.061728403, 0.5)
+points = PackedVector2Array(95, 0, 156, 0)
+default_color = Color(0, 0, 0, 1)
+antialiased = true
+
+[node name="OutputPort" type="Area2D" parent="Output"]
+position = Vector2(149.79999, 0)
+
+[node name="ColisionShape2D" type="CollisionShape2D" parent="Output/OutputPort"]
+position = Vector2(-22.4, 0)
+scale = Vector2(1, 2)
+shape = SubResource("CircleShape2D_2n8pb")

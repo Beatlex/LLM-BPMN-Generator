@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://djo07vqhsbytc"]
+
+[node name="DiagramLoader_tscn" type="Node2D"]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="UI"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ButtonLoadJson" type="Button" parent="UI"]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="ButtonRender" type="Button" parent="UI"]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="DiagramRoot" type="Node2D" parent="."]
