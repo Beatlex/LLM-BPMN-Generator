@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://dfpq5sltcg6pc"]
+
+[ext_resource type="Script" uid="uid://bh06uq3fipx7d" path="res://Testing/TestFlow/TestFlowGateway.gd" id="1_gnlt6"]
+[ext_resource type="PackedScene" uid="uid://brsep0cjwxvvu" path="res://Assets/bpmn/gateways/gateway_node_2d.tscn" id="2_oktit"]
+[ext_resource type="PackedScene" uid="uid://cdu8h4mxpafr6" path="res://Assets/bpmn/tasks/TaskNode2D.tscn" id="3_jwk4q"]
+[ext_resource type="PackedScene" uid="uid://c7orbi1jay6mb" path="res://Assets/bpmn/nodes/FlowLine2D.tscn" id="4_jf68g"]
+[ext_resource type="Script" uid="uid://cjor4fffx3mqm" path="res://Scripts/engine/layout/LayoutEngine.gd" id="5_oktit"]
+
+[node name="TestFlowGateway" type="Node2D"]
+script = ExtResource("1_gnlt6")
+
+[node name="GatewayNode2d" parent="." instance=ExtResource("2_oktit")]
+element_name = "Essen Vorhanden?"
+
+[node name="TaskNode2DJa" parent="." instance=ExtResource("3_jwk4q")]
+position = Vector2(600, 0)
+element_name = "Essen aus kühlschrank öffnen"
+task_type = 0
+
+[node name="TaskNode2DNein" parent="." instance=ExtResource("3_jwk4q")]
+position = Vector2(600, 400)
+element_name = "Essen bestellen"
+task_type = 0
+
+[node name="FlowLine2DJa" parent="." instance=ExtResource("4_jf68g")]
+position = Vector2(230, 0)
+
+[node name="FlowLine2DNein" parent="." instance=ExtResource("4_jf68g")]
+position = Vector2(0, 400)
+
+[node name="LayoutEngine" type="Node" parent="."]
+script = ExtResource("5_oktit")

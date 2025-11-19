@@ -28,7 +28,7 @@ enum TaskType {
 @onready var label: Label   = $Label
 
 # Ports
-@onready var port_input: Area2D = $Input/InputPort
+@onready var port_input: Area2D  = $Input/InputPort
 @onready var port_output: Area2D = $Output/OutputPort
 
 
@@ -117,3 +117,9 @@ func get_output_ports() -> Array:
 
 func get_port_global_position(port: Area2D) -> Vector2:
 	return port.global_position
+
+func get_input_port_position(idx := 0) -> Vector2:
+	return get_port_global_position(get_input_ports()[idx])
+
+func get_output_port_position(idx := 0) -> Vector2:
+	return get_port_global_position(get_output_ports()[idx])

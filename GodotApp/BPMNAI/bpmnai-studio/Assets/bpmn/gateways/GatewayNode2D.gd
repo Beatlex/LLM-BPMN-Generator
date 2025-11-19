@@ -17,9 +17,9 @@ enum GatewayType { XOR, AND, OR, EMPTY }
 @onready var sprite: Sprite2D = $GatewayLogo
 @onready var label: Label   = $Label
 # Ports
-@onready var port_input: Area2D            = $Input/InputPort/Area2D
-@onready var port_output_x: Area2D         = $OutputX/OutputPort/Area2D
-@onready var port_output_y: Area2D         = $OutputY/OutputPort/Area2D
+@onready var port_input: Area2D = $Input/InputPort
+@onready var port_output_x: Area2D = $OutputX/OutputPort
+@onready var port_output_y: Area2D = $OutputY/OutputPort
 # Output label nodes
 @onready var output_label_x: Label = $OutputX/Output1
 @onready var output_label_y: Label = $OutputY/Output2
@@ -100,3 +100,6 @@ func get_output_ports() -> Array:
 
 func get_port_global_position(port: Area2D) -> Vector2:
 	return port.global_position
+
+func get_output_port_position(idx := 0) -> Vector2:
+	return get_port_global_position(get_output_ports()[idx])

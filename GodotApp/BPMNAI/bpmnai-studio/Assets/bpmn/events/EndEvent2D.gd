@@ -32,7 +32,7 @@ enum EventType {
 @onready var label: Label = $Label
 
 # EndEvent hat NUR EINEN Input-Port:
-@onready var port_input: Area2D = $Input/InputPort/Area2D
+@onready var port_input: Area2D = $Input/InputPort
 
 ## -------------------------------------------------------------
 ## TEXTURES
