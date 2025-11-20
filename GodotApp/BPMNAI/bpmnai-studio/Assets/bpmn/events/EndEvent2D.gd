@@ -21,9 +21,8 @@ enum EventType {
 @export var event_type: EventType = EventType.GENERIC:
 	set = _set_event_type
 
-@export var parent: String = ""
-@export var children: Array[String] = []
-@export var flows_to: Array[String] = []
+@export var parent: Array[String] = []
+
 
 ## -------------------------------------------------------------
 ## INTERNAL REFERENCES
@@ -76,9 +75,8 @@ func setup_from_element(element: Dictionary):
 	element_name = element.get("name", "")
 	label.text   = element_name
 
-	parent      = element.get("parent", "")
-	children    = element.get("children", [])
-	flows_to    = element.get("flows_to", [])
+	parent      = element.get("parent", [])
+
 
 	# Typ mappen
 	var t = element.get("type", "")

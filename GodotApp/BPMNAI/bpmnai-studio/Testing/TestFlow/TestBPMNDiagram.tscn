@@ -1,0 +1,54 @@
+[gd_scene load_steps=8 format=3 uid="uid://htc6dv6fkasm"]
+
+[ext_resource type="Script" uid="uid://dje4amhfmtlcs" path="res://Testing/TestFlow/TestBPMNDiagram.gd" id="1_7t2tb"]
+[ext_resource type="Script" uid="uid://cjor4fffx3mqm" path="res://Scripts/engine/layout/LayoutEngine.gd" id="2_mawia"]
+[ext_resource type="PackedScene" uid="uid://d3p008xqba2lp" path="res://Assets/bpmn/events/StartEvent2D.tscn" id="3_1xp7o"]
+[ext_resource type="PackedScene" uid="uid://cdu8h4mxpafr6" path="res://Assets/bpmn/tasks/TaskNode2D.tscn" id="4_7uaod"]
+[ext_resource type="PackedScene" uid="uid://brsep0cjwxvvu" path="res://Assets/bpmn/gateways/gateway_node_2d.tscn" id="5_kse2x"]
+[ext_resource type="PackedScene" uid="uid://ckgxtpcj6g6yn" path="res://Assets/bpmn/events/EndEvent2D.tscn" id="6_fnykw"]
+[ext_resource type="PackedScene" uid="uid://c7orbi1jay6mb" path="res://Assets/bpmn/nodes/FlowLine2D.tscn" id="7_mawia"]
+
+[node name="TestBpmnDiagram" type="Node2D"]
+script = ExtResource("1_7t2tb")
+
+[node name="LayoutEngine" type="Node" parent="."]
+script = ExtResource("2_mawia")
+
+[node name="StartEvent" parent="." instance=ExtResource("3_1xp7o")]
+element_id = "0"
+
+[node name="Flow_Start_Task" parent="." instance=ExtResource("7_mawia")]
+
+[node name="TaskA" parent="." instance=ExtResource("4_7uaod")]
+element_id = "1"
+element_name = "Kühlschrank Checken"
+task_type = 1
+
+[node name="Flow_Task_Gateway" parent="." instance=ExtResource("7_mawia")]
+
+[node name="Gateway" parent="." instance=ExtResource("5_kse2x")]
+element_id = "2"
+element_name = "Ist Essen vorhanden?"
+
+[node name="Flow_GW_Yes" parent="." instance=ExtResource("7_mawia")]
+
+[node name="TaskYes" parent="." instance=ExtResource("4_7uaod")]
+element_id = "3"
+element_name = "Essen aus Kühlschrank holen."
+
+[node name="Flow_GW_No" parent="." instance=ExtResource("7_mawia")]
+
+[node name="TaskNo" parent="." instance=ExtResource("4_7uaod")]
+element_id = "3.1"
+element_name = "Essen bestellen"
+
+[node name="Flow_Yes_End" parent="." instance=ExtResource("7_mawia")]
+
+[node name="Flow_No_End" parent="." instance=ExtResource("7_mawia")]
+
+[node name="EndEvent" parent="." instance=ExtResource("6_fnykw")]
+element_id = "4"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(900, 400)
+zoom = Vector2(0.6, 0.6)

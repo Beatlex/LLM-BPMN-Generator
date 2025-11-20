@@ -45,6 +45,6 @@ default_color = Color(0, 0, 0, 1)
 position = Vector2(-163, 0)
 
 [node name="Area2D" type="CollisionShape2D" parent="Input/InputPort"]
-position = Vector2(1.8333588, 0)
-scale = Vector2(0.29830834, 0.5362802)
+position = Vector2(1.8333362, 0)
+scale = Vector2(0.0870023, 0.7150403)
 shape = SubResource("CircleShape2D_h1tgo")

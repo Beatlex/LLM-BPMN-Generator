@@ -1,7 +1,7 @@
 extends Node2D
 
 ## -------------------------------------------------------------
-## ENUM – Welche Task-Art soll das Icon bestimmen?
+## ENUM – Welche Task-Art bestimmt das Icon
 ## -------------------------------------------------------------
 enum TaskType {
 	EMPTY,
@@ -18,14 +18,19 @@ enum TaskType {
 @export var element_id: String = ""
 @export var element_name: String = ""
 
+# Auto-Assign: Default IMMER EMPTY
 @export var task_type: TaskType = TaskType.EMPTY:
 	set = _set_task_type
+
+@export var element_parent_id: String = ""
+@export var element_children_ids: Array[String] = []
+
 
 ## -------------------------------------------------------------
 ## INTERNAL NODE REFERENCES
 ## -------------------------------------------------------------
 @onready var sprite: Sprite2D = $TaskLogo
-@onready var label: Label   = $Label
+@onready var label: Label     = $Label
 
 # Ports
 @onready var port_input: Area2D  = $Input/InputPort
@@ -35,18 +40,20 @@ enum TaskType {
 ## -------------------------------------------------------------
 ## TEXTURES
 ## -------------------------------------------------------------
-var tex_empty               = preload("res://Assets/bpmn/tasks/Task_EmptyTemplate.png")
-var tex_manual              = preload("res://Assets/bpmn/tasks/Task_Manual.png")
-var tex_receive             = preload("res://Assets/bpmn/tasks/Task_Receive.png")
+var tex_empty                = preload("res://Assets/bpmn/tasks/Task_EmptyTemplate.png")
+var tex_manual               = preload("res://Assets/bpmn/tasks/Task_Manual.png")
+var tex_receive              = preload("res://Assets/bpmn/tasks/Task_Receive.png")
 var tex_receive_instantiated = preload("res://Assets/bpmn/tasks/Task_Receive_instantiated.png")
-var tex_script              = preload("res://Assets/bpmn/tasks/Task_Script.png")
-var tex_service             = preload("res://Assets/bpmn/tasks/Task_Service.png")
+var tex_script               = preload("res://Assets/bpmn/tasks/Task_Script.png")
+var tex_service              = preload("res://Assets/bpmn/tasks/Task_Service.png")
+
 
 ## -------------------------------------------------------------
 ## READY
 ## -------------------------------------------------------------
 func _ready():
 	_update_visuals()
+
 	if element_name != "":
 		label.text = element_name
 
@@ -58,8 +65,9 @@ func _set_task_type(value):
 	task_type = value
 	_update_visuals()
 
+
 ## -------------------------------------------------------------
-## PUBLIC API – Für den Renderer
+## PUBLIC API – setup from JSON
 ## -------------------------------------------------------------
 func setup_from_element(element: Dictionary) -> void:
 
@@ -67,6 +75,10 @@ func setup_from_element(element: Dictionary) -> void:
 	element_name = element.get("name", "")
 	label.text   = element_name
 
+	element_parent_id    = element.get("parent", "")
+	element_children_ids = element.get("children", [])
+
+	# Auto-Assign fallback: EMPTY
 	var t = element.get("type", "")
 
 	match t:
@@ -81,9 +93,10 @@ func setup_from_element(element: Dictionary) -> void:
 		"task_service":
 			task_type = TaskType.SERVICE
 		_:
-			task_type = TaskType.EMPTY
+			task_type = TaskType.EMPTY   # Always fallback
 
 	_update_visuals()
+
 
 ## -------------------------------------------------------------
 ## INTERNAL – Updated the proper icon
@@ -106,8 +119,9 @@ func _update_visuals() -> void:
 		TaskType.SERVICE:
 			sprite.texture = tex_service
 
+
 ## -------------------------------------------------------------
-## PORT API – Konsistent zum Gateway!
+## PORT API – Konsistent zum Gateway
 ## -------------------------------------------------------------
 func get_input_ports() -> Array:
 	return [port_input]

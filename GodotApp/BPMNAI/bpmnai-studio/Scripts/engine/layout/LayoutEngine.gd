@@ -103,3 +103,61 @@ func _compute_manhattan_path(start: Vector2, end: Vector2) -> PackedVector2Array
 		pts.append(end)
 
 	return pts
+	
+	# -------------------------------------------------------------------
+# 5) Merge-Routing für Ziele mit mehreren eingehenden Flows
+# -------------------------------------------------------------------
+func route_merge_to_target(
+		source_nodes: Array,
+		source_ports: Array,
+		target_node,
+		target_port: Area2D
+	) -> Dictionary:
+
+	var result := {}
+
+	# 1) Alle Startpositionen sammeln
+	var starts: Array = []
+	for i in range(source_nodes.size()):
+		starts.append(source_nodes[i].get_port_global_position(source_ports[i]))
+
+	# 2) Zielposition
+	var end_pos: Vector2 = target_node.get_port_global_position(target_port)
+
+	# 3) Halbpunkt der horizontalen Strecke
+	#    -> Stränge laufen bis zur Hälfte parallel
+	var max_start_x := -999999.0
+	for s in starts:
+		if s.x > max_start_x:
+			max_start_x = s.x
+
+	var half_x = lerp(max_start_x, end_pos.x, 0.5)
+
+	# 4) Merge-Y = Mittelwert aller Starts
+	var sum_y := 0.0
+	for s in starts:
+		sum_y += s.y
+	var merge_y := sum_y / starts.size()
+
+	# 5) Für jeden Startpfad erzeugen
+	for i in range(starts.size()):
+		var s: Vector2 = starts[i]
+		var pts := PackedVector2Array()
+
+		# 1. Startpunkt
+		pts.append(s)
+
+		# 2. Erst bis zur halben Strecke (parallel!)
+		var half_point := Vector2(half_x, s.y)
+		pts.append(half_point)
+
+		# 3. Von halber Strecke auf Merge-Y
+		var merge_point := Vector2(half_x, merge_y)
+		pts.append(merge_point)
+
+		# 4. Von dort direkt in den EndEvent-Port
+		pts.append(end_pos)
+
+		result[source_nodes[i]] = pts
+
+	return result

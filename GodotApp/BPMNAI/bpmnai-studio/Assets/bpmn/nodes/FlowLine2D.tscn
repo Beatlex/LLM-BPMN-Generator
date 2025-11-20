@@ -12,7 +12,7 @@ default_color = Color(0, 0, 0, 1)
 joint_mode = 1
 
 [node name="ArrowHead" type="Sprite2D" parent="."]
-position = Vector2(24, 0)
+position = Vector2(3, 0)
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("2_hadh3")
 region_enabled = true

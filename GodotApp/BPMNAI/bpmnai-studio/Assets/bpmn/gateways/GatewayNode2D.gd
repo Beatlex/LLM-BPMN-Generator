@@ -8,21 +8,30 @@ enum GatewayType { XOR, AND, OR, EMPTY }
 @export var element_id: String = ""
 @export var element_name: String = ""
 
+# Neue Parameter (nicht invasiv)
+@export var element_output1: String = "Yes"
+@export var element_output2: String = "No"
+
+@export var element_parent_id: String = ""
+@export var element_children_ids: Array[String] = []
+
 @export var gateway_type: GatewayType = GatewayType.XOR:
 	set = _set_gateway_type
+
 
 ## -------------------------------------------------------------
 ## INTERNAL NODE REFERENCES
 ## -------------------------------------------------------------
 @onready var sprite: Sprite2D = $GatewayLogo
-@onready var label: Label   = $Label
-# Ports
-@onready var port_input: Area2D = $Input/InputPort
-@onready var port_output_x: Area2D = $OutputX/OutputPort
-@onready var port_output_y: Area2D = $OutputY/OutputPort
+@onready var label: Label     = $Label
 # Output label nodes
-@onready var output_label_x: Label = $OutputX/Output1
-@onready var output_label_y: Label = $OutputY/Output2
+@onready var output_label_x: Label = $Output1
+@onready var output_label_y: Label = $Output2
+# Ports
+@onready var port_input: Area2D      = $Input/InputPort
+@onready var port_output_x: Area2D   = $OutputX/OutputPort
+@onready var port_output_y: Area2D   = $OutputY/OutputPort
+
 ## -------------------------------------------------------------
 ## TEXTURES
 ## -------------------------------------------------------------
@@ -31,13 +40,21 @@ var tex_and   = preload("res://Assets/bpmn/gateways/AND_Gateway.png")
 var tex_or    = preload("res://Assets/bpmn/gateways/OR_Gateway.png")
 var tex_empty = preload("res://Assets/bpmn/gateways/Gateway_Empty.png")
 
+
 ## -------------------------------------------------------------
 ## READY
 ## -------------------------------------------------------------
 func _ready():
 	_update_visuals()
+
+	# Haupttitel
 	if element_name != "":
 		label.text = element_name
+
+	# Output-Labels (mit Default)
+	output_label_x.text = element_output1 if element_output1 != "" else "Ja"
+	output_label_y.text = element_output2 if element_output2 != "" else "Nein"
+
 
 ## -------------------------------------------------------------
 ## SETTER (Fix für Editor Dropdown!)
@@ -46,14 +63,24 @@ func _set_gateway_type(value):
 	gateway_type = value
 	_update_visuals()
 
+
 ## -------------------------------------------------------------
-## PUBLIC API – called by BPMNRenderer
+## PUBLIC API – setup from JSON
 ## -------------------------------------------------------------
 func setup_from_element(element: Dictionary) -> void:
 
-	element_id   = element.get("id", "")
-	element_name = element.get("name", "")
-	label.text   = element_name
+	element_id      = element.get("id", "")
+	element_name    = element.get("name", "")
+	label.text      = element_name
+
+	element_parent_id    = element.get("parent", "")
+	element_children_ids = element.get("children", [])
+
+	element_output1 = element.get("output1", element_output1)
+	element_output2 = element.get("output2", element_output2)
+
+	output_label_x.text = element_output1
+	output_label_y.text = element_output2
 
 	var t = element.get("type", "")
 
@@ -69,6 +96,7 @@ func setup_from_element(element: Dictionary) -> void:
 
 	_update_visuals()
 
+
 ## -------------------------------------------------------------
 ## INTERNAL — Update visuals based on type
 ## -------------------------------------------------------------
@@ -79,15 +107,13 @@ func _update_visuals():
 	match gateway_type:
 		GatewayType.XOR:
 			sprite.texture = tex_xor
-
 		GatewayType.AND:
 			sprite.texture = tex_and
-
 		GatewayType.OR:
 			sprite.texture = tex_or
-
 		GatewayType.EMPTY:
 			sprite.texture = tex_empty
+
 
 ## -------------------------------------------------------------
 ## PORT API

@@ -13,7 +13,11 @@ radius = 1.0
 radius = 2.0
 
 [node name="GatewayNode2d" type="Node2D"]
+position = Vector2(1, 0)
 script = ExtResource("2_i4fo5")
+element_name = "Essen im Kühlschrank?"
+element_output1 = ""
+element_output2 = ""
 gateway_type = 2
 
 [node name="GatewayLogo" type="Sprite2D" parent="."]
@@ -25,16 +29,16 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -128.0
-offset_right = 20.0
-offset_bottom = -105.0
+offset_left = -115.0
+offset_top = -142.0
+offset_right = 35.0
+offset_bottom = -119.0
 grow_horizontal = 2
 grow_vertical = 0
+scale = Vector2(1.5, 1.5)
 text = "Name"
 horizontal_alignment = 1
 vertical_alignment = 1
-autowrap_mode = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="OutputX" type="Line2D" parent="."]
@@ -52,14 +56,6 @@ position = Vector2(-20.457136, 0)
 scale = Vector2(1, 2)
 shape = SubResource("CircleShape2D_t46qg")
 
-[node name="Output1" type="Label" parent="OutputX"]
-offset_left = 117.0
-offset_top = 14.0
-offset_right = 144.0
-offset_bottom = 37.0
-scale = Vector2(18.168829, 2.0400014)
-text = "Yes"
-
 [node name="OutputY" type="Line2D" parent="."]
 position = Vector2(0, 81.00001)
 scale = Vector2(0.2, 0.107526794)
@@ -72,14 +68,6 @@ position = Vector2(0, 148)
 [node name="Area2D" type="CollisionShape2D" parent="OutputY/OutputPort"]
 scale = Vector2(1.7, 1)
 shape = SubResource("CircleShape2D_xldx8")
-
-[node name="Output2" type="Label" parent="OutputY"]
-offset_left = 60.0
-offset_top = 148.80006
-offset_right = 80.0
-offset_bottom = 171.80006
-scale = Vector2(8.072052, 8.628012)
-text = "no"
 
 [node name="Input" type="Line2D" parent="."]
 position = Vector2(-89.00001, 0)
@@ -94,3 +82,39 @@ position = Vector2(-163, 0)
 position = Vector2(-11.580688, 0)
 scale = Vector2(1, 2)
 shape = SubResource("CircleShape2D_bu7s8")
+
+[node name="Output1" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 107.0
+offset_top = -37.0
+offset_right = 147.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Output1"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Output2" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 33.0
+offset_top = 92.0
+offset_right = 73.0
+offset_bottom = 115.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Output2"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+metadata/_edit_use_anchors_ = true
