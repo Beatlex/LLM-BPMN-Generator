@@ -11,7 +11,7 @@ extends Node2D
 
 
 func _ready():
-	# Gateway-Ports holen
+	# Gateway-Ports holen^^^^^^^^^^^^^^^^^^^^^^^^^^
 	var gw_outputs: Array = gateway.get_output_ports()
 	var gw_out_yes: Area2D = gw_outputs[0]   # rechts
 	var gw_out_no:  Area2D = gw_outputs[1]   # unten

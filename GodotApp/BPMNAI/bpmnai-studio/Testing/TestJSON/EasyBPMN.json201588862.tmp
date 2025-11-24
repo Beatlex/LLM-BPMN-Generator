@@ -1,0 +1,57 @@
+[
+  {
+	"element_id": "0",
+	"element_name": "Hunger kommt auf",
+	"element_type": "start_event",
+	"flows_to": ["1"],
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "1",
+	"element_name": "Essen aus Kühlschrank holen",
+	"element_type": "task",
+	"flows_to": ["10"],
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "10",
+	"element_name": "Auswahl treffen",
+	"element_type": "exclusive_gateway",
+
+	"flows_to": ["2", "3"],
+
+	"outputs": {
+	  "right": "Icecream bestellen",
+	  "down": "Milchshake bestellen"
+	},
+
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "2",
+	"element_name": "Eis essen",
+	"element_type": "task",
+	"flows_to": ["4"],
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "3",
+	"element_name": "Milchshake trinken",
+	"element_type": "task",
+	"flows_to": ["4"],
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "4",
+	"element_name": "Hunger gestillt",
+	"element_type": "end_event",
+	"flows_to": [],
+	"lane_id": "",
+	"pool_id": ""
+  }
+]

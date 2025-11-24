@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://t5e057oaq7st"]
+
+[ext_resource type="Script" uid="uid://1kftuksqvchd" path="res://Testing/TestJSON/node_factory_test.gd" id="1_81304"]
+[ext_resource type="Script" uid="uid://waxj5m12quwl" path="res://Scripts/engine/NodeFactory.gd" id="2_yunv1"]
+[ext_resource type="Script" uid="uid://cjor4fffx3mqm" path="res://Scripts/engine/layout/LayoutEngine.gd" id="3_543vc"]
+
+[node name="NodeFactoryTest" type="Node2D"]
+script = ExtResource("1_81304")
+
+[node name="NodeFactory" type="Node" parent="."]
+script = ExtResource("2_yunv1")
+
+[node name="LayoutEngine" type="Node" parent="."]
+script = ExtResource("3_543vc")

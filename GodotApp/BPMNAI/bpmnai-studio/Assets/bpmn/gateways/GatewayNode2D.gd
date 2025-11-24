@@ -18,6 +18,13 @@ enum GatewayType { XOR, AND, OR, EMPTY }
 @export var gateway_type: GatewayType = GatewayType.XOR:
 	set = _set_gateway_type
 
+@export var lane_id: String = ""
+@export var pool_id: String = "" 
+
+@export var element_type: String = "gateway"
+@export var outputs: Dictionary = {}
+@export var flows_to: Array[String] = []
+
 
 ## -------------------------------------------------------------
 ## INTERNAL NODE REFERENCES
@@ -31,6 +38,7 @@ enum GatewayType { XOR, AND, OR, EMPTY }
 @onready var port_input: Area2D      = $Input/InputPort
 @onready var port_output_x: Area2D   = $OutputX/OutputPort
 @onready var port_output_y: Area2D   = $OutputY/OutputPort
+
 
 ## -------------------------------------------------------------
 ## TEXTURES
@@ -68,33 +76,75 @@ func _set_gateway_type(value):
 ## PUBLIC API – setup from JSON
 ## -------------------------------------------------------------
 func setup_from_element(element: Dictionary) -> void:
+	element_id   = element.get("element_id", "")
+	element_type = element.get("element_type", "gateway")
+	element_name = element.get("element_name", "")
 
-	element_id      = element.get("id", "")
-	element_name    = element.get("name", "")
-	label.text      = element_name
+	call_deferred("_apply_label", element_name)
 
-	element_parent_id    = element.get("parent", "")
-	element_children_ids = element.get("children", [])
+	# 1) Gateway-Type bevorzugt aus JSON lesen
+	var gt = element.get("gateway_type", "")
 
-	element_output1 = element.get("output1", element_output1)
-	element_output2 = element.get("output2", element_output2)
+	if gt == "":
+		# 2) AUTOMATISCHE Erkennung aus element_type
+		match element_type:
+			"exclusive_gateway":
+				gateway_type = GatewayType.XOR
+			"inclusive_gateway":
+				gateway_type = GatewayType.OR
+			"parallel_gateway":
+				gateway_type = GatewayType.AND
+			_:
+				gateway_type = GatewayType.EMPTY
+	else:
+		# 3) Der JSON "gateway_type" Key überschreibt
+		match gt.to_lower():
+			"xor":
+				gateway_type = GatewayType.XOR
+			"and":
+				gateway_type = GatewayType.AND
+			"or":
+				gateway_type = GatewayType.OR
+			_:
+				gateway_type = GatewayType.EMPTY	
+	# flows_to
+	flows_to = []
+	for f in element.get("flows_to", []):
+		flows_to.append(String(f))
 
-	output_label_x.text = element_output1
-	output_label_y.text = element_output2
+	# outputs (Dictionary)
+	outputs = element.get("outputs", {})
 
-	var t = element.get("type", "")
+	# Output labels (optional)
+	var outs = element.get("output_labels", [])
+	if outs.size() > 0:
+		element_output1 = outs[0]
+		call_deferred("_apply_output_label_x", outs[0])
+	if outs.size() > 1:
+		element_output2 = outs[1]
+		call_deferred("_apply_output_label_y", outs[1])
 
-	match t:
-		"exclusive_gateway":
-			gateway_type = GatewayType.XOR
-		"parallel_gateway":
-			gateway_type = GatewayType.AND
-		"inclusive_gateway":
-			gateway_type = GatewayType.OR
-		_:
-			gateway_type = GatewayType.EMPTY
+	# Parent/Children
+	element_parent_id = element.get("parent", "")
+
+	lane_id = element.get("lane_id", "")
+	pool_id = element.get("pool_id", "")
 
 	_update_visuals()
+
+
+# SAFETY HELPERS (NEU)
+func _apply_label(t: String) -> void:
+	if label:
+		label.text = t
+
+func _apply_output_label_x(t: String) -> void:
+	if output_label_x:
+		output_label_x.text = t
+
+func _apply_output_label_y(t: String) -> void:
+	if output_label_y:
+		output_label_y.text = t
 
 
 ## -------------------------------------------------------------

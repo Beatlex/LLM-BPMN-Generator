@@ -1,0 +1,20 @@
+[gd_scene load_steps=6 format=3 uid="uid://t5e057oaq7st"]
+
+[ext_resource type="Script" uid="uid://1kftuksqvchd" path="res://Testing/TestJSON/node_factory_test.gd" id="1_81304"]
+[ext_resource type="Script" uid="uid://waxj5m12quwl" path="res://Scripts/engine/NodeFactory.gd" id="2_yunv1"]
+[ext_resource type="Script" uid="uid://cjor4fffx3mqm" path="res://Scripts/engine/layout/LayoutEngine.gd" id="3_543vc"]
+[ext_resource type="Script" uid="uid://cordmoa4tjp46" path="res://Scripts/engine/flow/FlowConnectionHandler.gd" id="4_omrj0"]
+[ext_resource type="PackedScene" uid="uid://c7orbi1jay6mb" path="res://Assets/bpmn/nodes/FlowLine2D.tscn" id="5_gcj33"]
+
+[node name="NodeFactoryTest" type="Node2D"]
+script = ExtResource("1_81304")
+
+[node name="NodeFactory" type="Node" parent="."]
+script = ExtResource("2_yunv1")
+
+[node name="LayoutEngine" type="Node" parent="."]
+script = ExtResource("3_543vc")
+
+[node name="FlowConnectionHandler" type="Node" parent="."]
+script = ExtResource("4_omrj0")
+flow_scene = ExtResource("5_gcj33")

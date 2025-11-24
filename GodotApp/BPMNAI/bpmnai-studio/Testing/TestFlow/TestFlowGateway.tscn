@@ -15,12 +15,10 @@ element_name = "Essen Vorhanden?"
 [node name="TaskNode2DJa" parent="." instance=ExtResource("3_jwk4q")]
 position = Vector2(600, 0)
 element_name = "Essen aus kühlschrank öffnen"
-task_type = 0
 
 [node name="TaskNode2DNein" parent="." instance=ExtResource("3_jwk4q")]
 position = Vector2(600, 400)
 element_name = "Essen bestellen"
-task_type = 0
 
 [node name="FlowLine2DJa" parent="." instance=ExtResource("4_jf68g")]
 position = Vector2(230, 0)

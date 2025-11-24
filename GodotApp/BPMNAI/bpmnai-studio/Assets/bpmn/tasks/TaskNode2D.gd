@@ -1,7 +1,7 @@
 extends Node2D
 
 ## -------------------------------------------------------------
-## ENUM – Welche Task-Art bestimmt das Icon
+## ENUM – Task-Art
 ## -------------------------------------------------------------
 enum TaskType {
 	EMPTY,
@@ -13,21 +13,27 @@ enum TaskType {
 }
 
 ## -------------------------------------------------------------
-## EXPORTS
+## EXPORTS – Daten aus JSON
 ## -------------------------------------------------------------
 @export var element_id: String = ""
 @export var element_name: String = ""
+@export var lane_id: String = ""
+@export var pool_id: String = ""
+@export var element_type: String = "task"
 
-# Auto-Assign: Default IMMER EMPTY
+# Muss zwingend Array[String] sein → typ-sicher!
+@export var flows_to: Array[String] = []
+
+# Die Eltern-ID (falls notwendig)
+@export var element_parent_id: String = ""
+
+# Auto-Assign: TaskType
 @export var task_type: TaskType = TaskType.EMPTY:
 	set = _set_task_type
 
-@export var element_parent_id: String = ""
-@export var element_children_ids: Array[String] = []
-
 
 ## -------------------------------------------------------------
-## INTERNAL NODE REFERENCES
+## INTERNAL REFERENCES
 ## -------------------------------------------------------------
 @onready var sprite: Sprite2D = $TaskLogo
 @onready var label: Label     = $Label
@@ -54,12 +60,13 @@ var tex_service              = preload("res://Assets/bpmn/tasks/Task_Service.png
 func _ready():
 	_update_visuals()
 
+	# Falls der Name bereits gesetzt wurde
 	if element_name != "":
-		label.text = element_name
+		call_deferred("_apply_label", element_name)
 
 
 ## -------------------------------------------------------------
-## SETTER – Für Editor Dropdown
+## Internal setter
 ## -------------------------------------------------------------
 func _set_task_type(value):
 	task_type = value
@@ -67,20 +74,28 @@ func _set_task_type(value):
 
 
 ## -------------------------------------------------------------
-## PUBLIC API – setup from JSON
+## PUBLIC API – JSON Import
 ## -------------------------------------------------------------
 func setup_from_element(element: Dictionary) -> void:
 
-	element_id   = element.get("id", "")
-	element_name = element.get("name", "")
-	label.text   = element_name
+	# Basic fields
+	element_id   = element.get("element_id", "")
+	element_name = element.get("element_name", "")
+	lane_id      = element.get("lane_id", "")
+	pool_id      = element.get("pool_id", "")
+	element_type = element.get("element_type", "task")
+	element_parent_id = element.get("parent", "")
 
-	element_parent_id    = element.get("parent", "")
-	element_children_ids = element.get("children", [])
+	# Label erst NACH onready existierend → deferred setzen
+	call_deferred("_apply_label", element_name)
 
-	# Auto-Assign fallback: EMPTY
-	var t = element.get("type", "")
+	# Typ-sichere flows_to Verarbeitung
+	flows_to.clear()
+	for target in element.get("flows_to", []):
+		flows_to.append(str(target))
 
+	# TaskType Auto-Erkennung
+	var t: String = element.get("element_type", "")
 	match t:
 		"task_manual":
 			task_type = TaskType.MANUAL
@@ -93,13 +108,21 @@ func setup_from_element(element: Dictionary) -> void:
 		"task_service":
 			task_type = TaskType.SERVICE
 		_:
-			task_type = TaskType.EMPTY   # Always fallback
+			task_type = TaskType.EMPTY
 
 	_update_visuals()
 
 
 ## -------------------------------------------------------------
-## INTERNAL – Updated the proper icon
+## Apply label (nach ready)
+## -------------------------------------------------------------
+func _apply_label(text_value: String) -> void:
+	if label:
+		label.text = text_value
+
+
+## -------------------------------------------------------------
+## Update visuals
 ## -------------------------------------------------------------
 func _update_visuals() -> void:
 	if not sprite:
@@ -121,7 +144,7 @@ func _update_visuals() -> void:
 
 
 ## -------------------------------------------------------------
-## PORT API – Konsistent zum Gateway
+## PORT API – Konsistent
 ## -------------------------------------------------------------
 func get_input_ports() -> Array:
 	return [port_input]

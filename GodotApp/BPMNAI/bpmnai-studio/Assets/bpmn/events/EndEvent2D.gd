@@ -1,16 +1,11 @@
 extends Node2D 
 
 ## -------------------------------------------------------------
-## ENUM – Internes Mapping der Typen
+## ENUM – EndEvent Typen
 ## -------------------------------------------------------------
 enum EventType {
 	GENERIC,
-	INTERMEDIATE,
-	TIMER,
-	MESSAGE,
-	ERROR,
-	SIGNAL,
-	LINK
+	ERROR
 }
 
 ## -------------------------------------------------------------
@@ -21,16 +16,18 @@ enum EventType {
 @export var event_type: EventType = EventType.GENERIC:
 	set = _set_event_type
 
-@export var parent: Array[String] = []
+@export var lane_id: String = ""
+@export var pool_id: String = ""
+@export var element_type: String = "end_event"
 
+# EndEvents haben nur EINEN Eingang
+@export var flows_to: Array[String] = []
 
 ## -------------------------------------------------------------
 ## INTERNAL REFERENCES
 ## -------------------------------------------------------------
 @onready var sprite: Sprite2D = $EndEventLogo
 @onready var label: Label = $Label
-
-# EndEvent hat NUR EINEN Input-Port:
 @onready var port_input: Area2D = $Input/InputPort
 
 ## -------------------------------------------------------------
@@ -46,11 +43,13 @@ var tex = {
 ## -------------------------------------------------------------
 func _ready():
 	_update_visuals()
+
 	if element_name != "":
-		label.text = element_name
+		# Label existiert erst NACH Ready
+		call_deferred("_apply_label", element_name)
 
 ## -------------------------------------------------------------
-## SETTER für Editor-Dropdown
+## SETTER
 ## -------------------------------------------------------------
 func _set_event_type(value):
 	event_type = value
@@ -60,26 +59,25 @@ func _set_event_type(value):
 ## UPDATE VISUALS
 ## -------------------------------------------------------------
 func _update_visuals():
-	if sprite:
-		if tex.has(event_type):
-			sprite.texture = tex[event_type]
-		else:
-			sprite.texture = tex[EventType.GENERIC]
+	if sprite and tex.has(event_type):
+		sprite.texture = tex[event_type]
 
 ## -------------------------------------------------------------
 ## JSON IMPORT
 ## -------------------------------------------------------------
-func setup_from_element(element: Dictionary):
+func setup_from_element(element: Dictionary) -> void:
 
-	element_id   = element.get("id", "")
-	element_name = element.get("name", "")
-	label.text   = element_name
+	element_id   = element.get("element_id", "")
+	element_name = element.get("element_name", "")
+	element_type = element.get("element_type", "end_event")
+	lane_id      = element.get("lane_id", "")
+	pool_id      = element.get("pool_id", "")
 
-	parent      = element.get("parent", [])
-
+	# Label deferred setzen
+	call_deferred("_apply_label", element_name)
 
 	# Typ mappen
-	var t = element.get("type", "")
+	var t = element.get("element_type", "")
 	match t:
 		"end_event":
 			event_type = EventType.GENERIC
@@ -90,11 +88,20 @@ func setup_from_element(element: Dictionary):
 
 	_update_visuals()
 
-	# Position setzen
+	# Position optional
 	if element.has("position"):
 		var pos = element["position"]
-		if pos.has("x") and pos.has("y"):
-			global_position = Vector2(pos["x"], pos["y"])
+		global_position = Vector2(
+			pos.get("x", 0),
+			pos.get("y", 0)
+		)
+
+## -------------------------------------------------------------
+## Deferred Label Setter
+## -------------------------------------------------------------
+func _apply_label(text_value: String) -> void:
+	if label:
+		label.text = text_value
 
 ## -------------------------------------------------------------
 ## PORT API
@@ -103,8 +110,7 @@ func get_input_ports() -> Array:
 	return [port_input]
 
 func get_output_ports() -> Array:
-	# EndEvent hat KEINEN output
-	return []
+	return []  # EndEvents haben keine Outputs
 
 func get_port_global_position(port: Area2D) -> Vector2:
 	return port.global_position
