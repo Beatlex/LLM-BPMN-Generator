@@ -10,6 +10,8 @@ const ARROW_BACK_OFFSET := 12
 func _ready():
 	print("[FlowLine2D] SELF = ", self.name)
 	print("[FlowLine2D] CHILDREN = ", get_children())
+	z_index = -10          # FlowLine2D immer hinter allen Nodes
+	line.z_index = -10     # Line2D auch sicher dahinter
 	arrow.z_index = 10
 
 
@@ -53,6 +55,12 @@ func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVecto
 		pts.append(p_down)
 		pts.append(end)
 		return pts
+	if route_type == 2:
+		var p_up := Vector2(start.x, end.y)
+		pts.append(start)
+		pts.append(p_up)
+		pts.append(end)
+		return pts
 
 	# DEFAULT: alter 2-Knick horizontaler Pfad
 	var mid_x := (start.x + end.x) * 0.5
@@ -62,6 +70,7 @@ func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVecto
 	pts.append(Vector2(mid_x, end.y))
 	pts.append(end)
 	return pts
+	
 
 
 # -------------------------------------------------------

@@ -53,11 +53,9 @@ func connect_flows(nodes: Dictionary) -> Array:
 			element_type = String(src.element_type)
 
 		var is_gateway := false
-		# passt für: "exclusive_gateway", "parallel_gateway", etc.
+		# für: "exclusive_gateway", "parallel_gateway"
 		if element_type == "gateway" or element_type.ends_with("_gateway"):
 			is_gateway = true
-
-
 		# ------------------------------------------------------
 		# 3) Für jeden Ausgang einen Flow erzeugen
 		# ------------------------------------------------------
@@ -102,7 +100,10 @@ func connect_flows(nodes: Dictionary) -> Array:
 
 			var route_type := 0       # default: horizontal
 			if is_gateway:
-				route_type = idx      # 0 = rechts, 1 = unten (ein Knick!)
+				if src_port_index == 1:
+					route_type = 2  # Port oben
+				elif src_port_index == 2:
+					route_type = 1  # Port unten
 
 			# Flow einrichten
 			if flow.has_method("setup"):

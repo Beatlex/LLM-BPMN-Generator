@@ -38,6 +38,7 @@ enum GatewayType { XOR, AND, OR, EMPTY }
 @onready var port_input: Area2D      = $Input/InputPort
 @onready var port_output_x: Area2D   = $OutputX/OutputPort
 @onready var port_output_y: Area2D   = $OutputY/OutputPort
+@onready var port_output_y_top: Area2D = $OutputYTop/OutputPort
 
 
 ## -------------------------------------------------------------
@@ -81,6 +82,7 @@ func setup_from_element(element: Dictionary) -> void:
 	element_name = element.get("element_name", "")
 
 	call_deferred("_apply_label", element_name)
+	_apply_labels_from_outputs()
 
 	# 1) Gateway-Type bevorzugt aus JSON lesen
 	var gt = element.get("gateway_type", "")
@@ -115,14 +117,20 @@ func setup_from_element(element: Dictionary) -> void:
 	# outputs (Dictionary)
 	outputs = element.get("outputs", {})
 
-	# Output labels (optional)
-	var outs = element.get("output_labels", [])
-	if outs.size() > 0:
-		element_output1 = outs[0]
-		call_deferred("_apply_output_label_x", outs[0])
-	if outs.size() > 1:
-		element_output2 = outs[1]
-		call_deferred("_apply_output_label_y", outs[1])
+# Output labels aus "outputs" Dictionary übernehmen
+	if element.has("outputs"):
+		var outs_dict = element["outputs"]
+
+	# RIGHT → output_label_x
+		if outs_dict.has("right"):
+			element_output1 = outs_dict["right"]
+			call_deferred("_apply_output_label_x", element_output1)
+
+		# DOWN → output_label_y
+		if outs_dict.has("down"):
+			element_output2 = outs_dict["down"]
+			call_deferred("_apply_output_label_y", element_output2)
+
 
 	# Parent/Children
 	element_parent_id = element.get("parent", "")
@@ -172,10 +180,37 @@ func get_input_ports() -> Array:
 	return [port_input]
 
 func get_output_ports() -> Array:
-	return [port_output_x, port_output_y]
+	var ports := []
+
+	if port_output_x:
+		ports.append(port_output_x)
+
+	if port_output_y_top:
+		ports.append(port_output_y_top)
+
+	if port_output_y:
+		ports.append(port_output_y)
+
+	return ports
 
 func get_port_global_position(port: Area2D) -> Vector2:
 	return port.global_position
 
 func get_output_port_position(idx := 0) -> Vector2:
 	return get_port_global_position(get_output_ports()[idx])
+
+func _apply_labels_from_outputs():
+	if outputs.size() > 2:
+		# Zu viele Outputs → keine Labels anzeigen
+		if output_label_x: output_label_x.visible = false
+		if output_label_y: output_label_y.visible = false
+		return
+
+	# Normalfall: 1–2 Ausgänge → Label anwenden
+	if outputs.has("right"):
+		output_label_x.visible = true
+		output_label_x.text = outputs["right"]
+
+	if outputs.has("down"):
+		output_label_y.visible = true
+		output_label_y.text = outputs["down"]

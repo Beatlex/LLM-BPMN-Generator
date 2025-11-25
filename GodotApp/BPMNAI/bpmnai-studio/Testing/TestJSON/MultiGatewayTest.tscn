@@ -1,0 +1,29 @@
+[gd_scene load_steps=7 format=3 uid="uid://cty1o5gccdb4u"]
+
+[ext_resource type="Script" uid="uid://1kftuksqvchd" path="res://Testing/TestJSON/node_factory_test.gd" id="1_04k7a"]
+[ext_resource type="Script" uid="uid://cordmoa4tjp46" path="res://Scripts/engine/flow/FlowConnectionHandler.gd" id="2_78ccg"]
+[ext_resource type="PackedScene" uid="uid://c7orbi1jay6mb" path="res://Assets/bpmn/nodes/FlowLine2D.tscn" id="3_t55ef"]
+[ext_resource type="Script" uid="uid://cjor4fffx3mqm" path="res://Scripts/engine/layout/LayoutEngine.gd" id="4_5yava"]
+[ext_resource type="Script" uid="uid://waxj5m12quwl" path="res://Scripts/engine/NodeFactory.gd" id="5_djgq6"]
+[ext_resource type="Script" uid="uid://bca6bin5dv0py" path="res://Testing/TestJSON/camera_2d.gd" id="6_wb8k5"]
+
+[node name="NodeFactoryTest" type="Node2D"]
+script = ExtResource("1_04k7a")
+
+[node name="DiagrammRoot" type="Node" parent="."]
+
+[node name="FlowConnectionHandler" type="Node" parent="DiagrammRoot"]
+script = ExtResource("2_78ccg")
+flow_scene = ExtResource("3_t55ef")
+
+[node name="LayoutEngine" type="Node" parent="DiagrammRoot"]
+script = ExtResource("4_5yava")
+
+[node name="NodeFactory" type="Node" parent="DiagrammRoot"]
+script = ExtResource("5_djgq6")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+offset = Vector2(900, 400)
+zoom = Vector2(0.7, 0.7)
+script = ExtResource("6_wb8k5")
+target_root_path = NodePath("../DiagrammRoot")
