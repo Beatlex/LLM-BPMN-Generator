@@ -1,6 +1,6 @@
 extends Node2D
 
-@onready var layout       : LayoutEngine = $LayoutEngine
+@onready var layout        			 = $LayoutEngine
 @onready var start_event                = $StartEvent
 @onready var task_a                     = $TaskA
 @onready var gateway                    = $Gateway
@@ -92,7 +92,7 @@ func _connect_end_merges():
 
 	var end_port = end_event.get_input_ports()[0]
 
-	var merged := layout.route_merge_to_target(
+	var merged = layout.route_merge_to_target(
 		sources,
 		ports,
 		end_event,
