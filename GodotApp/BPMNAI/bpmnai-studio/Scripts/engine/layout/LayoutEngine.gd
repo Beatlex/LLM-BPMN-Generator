@@ -22,53 +22,63 @@ func apply_layout(node_map: Dictionary) -> void:
 # ---------------------------------------------------
 func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 	for id in node_map.keys():
-		var node = node_map[id]
+		var gw = node_map[id]
 
-		# Typ lesen
-		var type: String = ""
-		if node is Node and "element_type" in node:
-			type = node.element_type
+		# element_type sicher lesen
+		if !("element_type" in gw):
+			continue
+		var type: String = String(gw.element_type)
 
-		# Nur Gateways
-		if type != "exclusive_gateway" and type != "gateway":
+		# Nur Gateways (z.B. "exclusive_gateway", "parallel_gateway")
+		if !type.ends_with("_gateway"):
 			continue
 
 		# flows_to lesen
+		var raw = gw.flows_to
 		var flows_to: Array = []
-		var raw = node.flows_to
-
 		if typeof(raw) == TYPE_ARRAY:
-			flows_to = raw
+			for e in raw:
+				flows_to.append(String(e))
 		elif typeof(raw) == TYPE_STRING:
-			flows_to = [raw]
+			flows_to = [String(raw)]
 
-		if flows_to.size() <= 1:
-			continue   # Kein Split → alles bleibt linear
+		var count := flows_to.size()
+		if count <= 1:
+			continue  # kein Split → alles bleibt linear
 
-		print("[LayoutEngine] Gateway %s hat %s Children" % [id, flows_to.size()])
+		print("\n[LayoutEngine] Gateway", id, "→", count, "Branches")
 
-		# Basisposition (von Gateway)
-		var base_x = node.global_position.x + NODE_SPACING_X
-		var base_y = node.global_position.y
+		var base_x = gw.global_position.x + NODE_SPACING_X
+		var base_y = gw.global_position.y
+		var mid = floor(count / 2.0)
 
-		for i in range(flows_to.size()):
+		for i in range(count):
 			var child_id = flows_to[i]
-
 			if not node_map.has(child_id):
 				continue
 
 			var child = node_map[child_id]
 
-			# X immer gleich für alle Zweige
-			var new_x = base_x
+			var x = base_x
+			var y = base_y
 
-			# Y verlagert nach Lane
-			var new_y = base_y + (i * LANE_SPACING_Y)
+			match count:
+				1:
+					# keine Änderung
+					y = base_y
+				2:
+					# 0 = mittig, 1 = unten
+					y = base_y + (LANE_SPACING_Y if i == 1 else 0)
+				3:
+					# -1 = oben / 0 = Mitte / +1 = unten
+					y = base_y + (i - 1) * LANE_SPACING_Y
+				_:
+					# symmetrisch auffächern für 4+ Branches
+					y = base_y + (i - mid) * LANE_SPACING_Y
 
-			child.global_position = Vector2(new_x, new_y)
-
+			child.global_position = Vector2(x, y)
 			print("[LayoutEngine]   Child %s → (%s, %s)" %
-				  [child_id, new_x, new_y])
+				[child_id, x, y])
 
 # ---------------------------------------------------
 # Linear durch das Prozessmodell

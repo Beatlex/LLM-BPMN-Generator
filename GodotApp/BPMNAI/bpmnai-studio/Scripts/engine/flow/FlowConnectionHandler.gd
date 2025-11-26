@@ -4,111 +4,112 @@ class_name FlowConnectionHandler
 @export var flow_scene: PackedScene
 
 
+# ======================================================
+#              SPLIT / MERGE ERKENNUNG
+# ======================================================
+func _is_split(node) -> bool:
+	return node.flows_to.size() > 1
+
+
+func _is_merge(node_id:String, nodes:Dictionary) -> bool:
+	var incoming := 0
+	for other_id in nodes.keys():
+		if nodes[other_id].flows_to.has(node_id):
+			incoming += 1
+	return incoming > 1
+
+
+# ======================================================
+#                FLOW RENDERING (SMART)
+# ======================================================
 func connect_flows(nodes: Dictionary) -> Array:
-	var flow_instances: Array = []
+	var flows: Array = []
 
-	# ----------------------------------------------------------
-	# 0) Fallback laden, falls keine Scene gesetzt wurde
-	# ----------------------------------------------------------
 	if flow_scene == null:
-		print("[FlowHandler] WARN: flow_scene=null → Lade Fallback FlowLine2D.tscn...")
+		print("[FlowHandler ⚠] fallback → FlowLine2D loaded")
 		flow_scene = load("res://Assets/bpmn/nodes/FlowLine2D.tscn")
-		if flow_scene == null:
-			push_error("[FlowHandler] FATAL: FlowLine2D.tscn konnte nicht geladen werden!")
-			return flow_instances
 
-	print("[FlowHandler] Starte Flow-Verarbeitung…")
 
-	# ----------------------------------------------------------
-	# 1) Über alle Nodes iterieren
-	# ----------------------------------------------------------
+	print("\n═══════ FLOW ROUTING START ═══════")
+
 	for id in nodes.keys():
 		var src = nodes[id]
-
-		# Prüfen ob Node Ausgänge hat
 		if not src.has_method("get_output_ports"):
 			continue
 
-		# flows_to direkt lesen (export Variable)
-		var flows_to: Array = []
-		var raw = src.flows_to
+		# --- flows_to normalisieren ---
+		var outs:Array = []
+		match typeof(src.flows_to):
+			TYPE_ARRAY: outs = src.flows_to
+			TYPE_STRING: outs = [src.flows_to]
+		if outs.is_empty(): continue
 
-		match typeof(raw):
-			TYPE_ARRAY:
-				for e in raw:
-					flows_to.append(String(e))
-			TYPE_STRING:
-				flows_to = [String(raw)]
-			_:
-				continue
-
-		if flows_to.is_empty():
-			continue
-
-		# ------------------------------------------------------
-		# 2) Gateway erkennen
-		# ------------------------------------------------------
-		var element_type: String = ""
+		# --- NodeTyp bestimmen ---
+		var is_gateway = false
 		if "element_type" in src:
-			element_type = String(src.element_type)
+			var t=str(src.element_type)
+			is_gateway = (t.ends_with("_gateway") or t=="gateway")
 
-		var is_gateway := false
-		# für: "exclusive_gateway", "parallel_gateway"
-		if element_type == "gateway" or element_type.ends_with("_gateway"):
-			is_gateway = true
-		# ------------------------------------------------------
-		# 3) Für jeden Ausgang einen Flow erzeugen
-		# ------------------------------------------------------
-		for idx in range(flows_to.size()):
-			var target_id: String = flows_to[idx]
+		var src_ports:Array = src.get_output_ports()
 
-			if not nodes.has(target_id):
-				push_warning("[FlowHandler] Ziel '%s' nicht gefunden!" % target_id)
-				continue
+		# ======================================================
+		#   FLOW GENERIEREN
+		# ======================================================
+		for i in range(outs.size()):
+			var target = String(outs[i])
+			if not nodes.has(target): continue
+			var dst = nodes[target]
+			if not dst.has_method("get_input_ports"): continue
 
-			var dst = nodes[target_id]
-
-			if not dst.has_method("get_input_ports"):
-				push_warning("[FlowHandler] Ziel '%s' hat keine get_input_ports()" % target_id)
-				continue
-
-			# Flow instanzieren
 			var flow = flow_scene.instantiate()
-			if flow == null:
-				push_error("[FlowHandler] Flow konnte nicht instanziert werden!")
-				continue
+			var dst_port = dst.get_input_ports()[0]  # BPMN hat 1 Eingang
 
-			# Ports ermitteln
-			var src_ports: Array = src.get_output_ports()
-			var dst_ports: Array = dst.get_input_ports()
+			# ======================================================
+			# SMART-Portwahl
+			# ======================================================
+			var src_port_index = 0
 
-			if src_ports.is_empty() or dst_ports.is_empty():
-				push_warning("[FlowHandler] Port fehlt bei %s → %s" % [id, target_id])
-				continue
-
-			# ------------------------------------------------------
-			# Gateway-Routing:
-			# idx = 0 → rechter Ausgang → route_type = 0
-			# idx = 1 → unterer Ausgang → route_type = 1
-			# ------------------------------------------------------
-			var src_port_index := 0
 			if is_gateway:
-				src_port_index = min(idx, src_ports.size() - 1)
+				var branch = outs.size()
 
+				match branch:
+
+					1:  # Default linear
+						src_port_index = 0
+
+					2:  # Rechts + Unten
+						src_port_index = i  # 0 → rechts | 1 → unten
+
+					3:  # Top + Right + Bottom
+						src_port_index = i  # 0=top 1=mid 2=bottom
+
+					_:
+						src_port_index = i % src_ports.size()
+
+			src_port_index = clamp(src_port_index,0,src_ports.size()-1)
 			var src_port = src_ports[src_port_index]
-			var dst_port = dst_ports[0]
 
-			var route_type := 0       # default: horizontal
-			if is_gateway:
-				if src_port_index == 1:
-					route_type = 2  # Port oben
-				elif src_port_index == 2:
-					route_type = 1  # Port unten
+			# ======================================================
+			# ROUTING-LOGIK (NEU, BPMN-KORREKT)
+			# ======================================================
+			var route_type = 0  # Standard: horizontal
 
-			# Flow einrichten
-			if flow.has_method("setup"):
-				flow.setup(src_port, dst_port, route_type)
+			var is_split = _is_split(src)
+			var is_merge = _is_merge(target,nodes)
 
-			flow_instances.append(flow)
+			if is_split:
+				# ------------------ GATEWAY SPLIT ------------------
+				# Expand → zuerst auf Task-Y-Level dann in X
+				if src_port_index == 0: route_type = 0  # Mid-Right
+				if src_port_index == 1: route_type = 2  # TOP-Branch
+				if src_port_index == 2: route_type = 1  # BOTTOM-Branch
 
-	return flow_instances
+			elif is_merge:
+				# ------------------ GATEWAY MERGE ------------------
+				# sammelt ein → erst X→Gateway dann Y zentriert
+				route_type = 3      # neuer smarter Merge-Routing Mode
+
+			flow.setup(src_port,dst_port,route_type)
+			flows.append(flow)
+
+	return flows

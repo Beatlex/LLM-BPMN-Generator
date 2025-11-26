@@ -1,0 +1,48 @@
+[
+  {
+	"element_id": "0",
+	"element_name": "Es Weihnachtet",
+	"element_type": "start_event",
+	"flows_to": ["1"]
+  },
+  {
+	"element_id": "1",
+	"element_name": "TannenbaumProduktion wird gestartet.",
+	"element_type": "task",
+	"flows_to": ["2"]
+  },
+  {
+	"element_id": "2",
+	"element_name": "Kakao oder Milch",
+	"element_type": "exclusive_gateway",
+	"flows_to": ["3", "4"],
+	"outputs": {
+	  "right": "Kakao",
+	  "down": "Milch"
+	}
+  },
+  {
+	"element_id": "3",
+	"element_name": "Weihnachtsbäume mit Zuckerstangen",
+	"element_type": "task",
+	"flows_to": ["5"]
+  },
+  {
+	"element_id": "4",
+	"element_name": "Weihnachtsbäume mit Kristbaumkugeln",
+	"element_type": "task",
+	"flows_to": ["5"]
+  },
+  {
+	"element_id": "5",
+	"element_name": "Verpackung",
+	"element_type": "task",
+	"flows_to": ["6"]
+  },
+  {
+	"element_id": "6",
+	"element_name": "Feritger Perfekter Weihnachtsbaum",
+	"element_type": "end_event",
+	"flows_to": []
+  }
+]

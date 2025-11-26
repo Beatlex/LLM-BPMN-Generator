@@ -7,7 +7,7 @@ extends Node2D
 
 func _ready():
 	# JSON laden
-	var file = FileAccess.open("res://Testing/TestJSON/Weihnachstbaum.json", FileAccess.READ)
+	var file = FileAccess.open("res://Testing/TestJSON/MultiGateway.json", FileAccess.READ)
 	var json_text = file.get_as_text()
 	var data = JSON.parse_string(json_text)
 

@@ -3,87 +3,99 @@ extends Node2D
 @onready var line: Line2D = $Line2D
 @onready var arrow: Sprite2D = $ArrowHead
 
-# small padding so arrowhead doesn't overlap port
 const ARROW_BACK_OFFSET := 12
 
 
 func _ready():
-	print("[FlowLine2D] SELF = ", self.name)
-	print("[FlowLine2D] CHILDREN = ", get_children())
-	z_index = -10          # FlowLine2D immer hinter allen Nodes
-	line.z_index = -10     # Line2D auch sicher dahinter
-	arrow.z_index = 10
+	z_index = -10
+	line.z_index = -10       # immer hinter Tasks
+	arrow.z_index = 10       # Pfeil über Linie
 
 
-# -------------------------------------------------------
-# Setup mit Ports + lane_index (Beta)
-# -------------------------------------------------------
+# ============================================================
+#  Setup vom Flow → Routing wird aus route_type abgeleitet
+# ============================================================
 func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
-
+	if line == null: await ready
 	if line == null:
-		# Sicherstellen, dass die Subnodes verfügbar sind
-		await ready
-
-	if line == null:
-		push_error("[FlowLine2D] FEHLER: line == null (Scene falsch aufgebaut?)")
+		push_error("[FlowLine2D] ⚠ Fehlende Line2D!!")
 		return
 
 	var start := src_port.global_position
-	var end := dst_port.global_position
+	var end   := dst_port.global_position
 
-	var pts := _compute_path(start, end, route_type)
-	line.points = pts
-	_update_arrow(pts)
-
+	line.points = _compute_path(start, end, route_type)
+	_update_arrow(line.points)
 
 
-# -------------------------------------------------------
-# Beta-Routing
-# -------------------------------------------------------
-func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVector2Array:
+
+# ============================================================
+#   Routing-Varianten
+#
+# 0 → Standard Horizontal
+# 1 → Bottom-Branch (↓ →)
+# 2 → Top-Branch    (↑ →)
+# 3 → Merge-Gateway (→ x-Achse ↘ oder ↗)
+#
+# ============================================================
+func _compute_path(start: Vector2, end: Vector2, route_type:int) -> PackedVector2Array:
 	var pts: PackedVector2Array = []
 
-	# route_type:
-	# 0 = normaler rechter Ausgang (→)
-	# 1 = unterer Ausgang (↓ →)
-
+	# ========================================================
+	# 1) Bottom Branch  (Split → Child unten)
+	# ========================================================
 	if route_type == 1:
-		# DOWN-Pfad → Nur 1 Knick
-		# 1) runter auf Höhe des Childs
-		var p_down := Vector2(start.x, end.y)
-		pts.append(start)
-		pts.append(p_down)
-		pts.append(end)
-		return pts
+		var p := Vector2(start.x, end.y)       # runter bis Y Zielnode → direkt rein
+		return [start, p, end]
+
+
+	# ========================================================
+	# 2) Top Branch  (Split → Child oben)
+	# ========================================================
 	if route_type == 2:
-		var p_up := Vector2(start.x, end.y)
-		pts.append(start)
-		pts.append(p_up)
-		pts.append(end)
-		return pts
+		var p := Vector2(start.x, end.y)       # hoch auf Y Node → dann rein
+		return [start, p, end]
 
-	# DEFAULT: alter 2-Knick horizontaler Pfad
+
+	# ========================================================
+	# 3) MERGE: sauberes Einsammeln (rot/blau korrekt!)
+	#
+	#    🔥 Verhalten:
+	#    - erst zu Gateway-X verschwenken
+	#    - dann auf Y des Gateways einsammeln
+	#    - schöner gleichlanger Knick → kein Mix-Mess
+	# ========================================================
+	if route_type == 3:
+		var x_merge := end.x - 80               # kleiner Soft-Offset → kein hartes Kreuz
+		var y_merge := end.y
+
+		return [
+			start,
+			Vector2(x_merge, start.y),          # 1. Knick: horizontale Annäherung
+			Vector2(x_merge, y_merge),          # 2. Knick: vertikal einsteuern
+			end
+		]
+
+
+	# ========================================================
+	# 0) DEFAULT — Normal Horizontal Routing
+	# ========================================================
 	var mid_x := (start.x + end.x) * 0.5
+	return [
+		start,
+		Vector2(mid_x, start.y),
+		Vector2(mid_x, end.y),
+		end
+	]
 
-	pts.append(start)
-	pts.append(Vector2(mid_x, start.y))
-	pts.append(Vector2(mid_x, end.y))
-	pts.append(end)
-	return pts
-	
 
-
-# -------------------------------------------------------
-# Pfeil-Ausrichtung
-# -------------------------------------------------------
-func _update_arrow(pts: PackedVector2Array) -> void:
-	if pts.size() < 2:
-		return
-
-	var p1 := pts[pts.size() - 2]
-	var p2 := pts[pts.size() - 1]
-
-	var dir := (p2 - p1).normalized()
-
+# ============================================================
+# Pfeil-Orientierung
+# ============================================================
+func _update_arrow(pts:PackedVector2Array):
+	if pts.size() < 2: return
+	var p1 = pts[pts.size()-2]
+	var p2 = pts[pts.size()-1]
+	var dir = (p2-p1).normalized()
 	arrow.global_position = p2 - dir * ARROW_BACK_OFFSET
 	arrow.rotation = dir.angle()
