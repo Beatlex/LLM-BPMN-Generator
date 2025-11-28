@@ -12,9 +12,6 @@ func _ready():
 	arrow.z_index = 10       # Pfeil über Linie
 
 
-# ============================================================
-#  Setup vom Flow → Routing wird aus route_type abgeleitet
-# ============================================================
 func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
 	if line == null: await ready
 	if line == null:
@@ -28,58 +25,31 @@ func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
 	_update_arrow(line.points)
 
 
-
-# ============================================================
-#   Routing-Varianten
-#
-# 0 → Standard Horizontal
-# 1 → Bottom-Branch (↓ →)
-# 2 → Top-Branch    (↑ →)
-# 3 → Merge-Gateway (→ x-Achse ↘ oder ↗)
-#
-# ============================================================
-func _compute_path(start: Vector2, end: Vector2, route_type:int) -> PackedVector2Array:
+func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVector2Array:
 	var pts: PackedVector2Array = []
 
-	# ========================================================
-	# 1) Bottom Branch  (Split → Child unten)
-	# ========================================================
+	# 1 = Bottom-Branch (Split ↓ →)
 	if route_type == 1:
-		var p := Vector2(start.x, end.y)       # runter bis Y Zielnode → direkt rein
+		var p := Vector2(start.x, end.y)
 		return [start, p, end]
 
-
-	# ========================================================
-	# 2) Top Branch  (Split → Child oben)
-	# ========================================================
+	# 2 = Top-Branch (Split ↑ →)
 	if route_type == 2:
-		var p := Vector2(start.x, end.y)       # hoch auf Y Node → dann rein
+		var p := Vector2(start.x, end.y)
 		return [start, p, end]
 
-
-	# ========================================================
-	# 3) MERGE: sauberes Einsammeln (rot/blau korrekt!)
-	#
-	#    🔥 Verhalten:
-	#    - erst zu Gateway-X verschwenken
-	#    - dann auf Y des Gateways einsammeln
-	#    - schöner gleichlanger Knick → kein Mix-Mess
-	# ========================================================
+	# 3 = MERGE Top/Bottom:
+	#     erst auf X des Gateways, dann vertikal rein
 	if route_type == 3:
-		var x_merge := end.x - 80               # kleiner Soft-Offset → kein hartes Kreuz
-		var y_merge := end.y
+		var p := Vector2(end.x, start.y)
+		return [start, p, end]
 
-		return [
-			start,
-			Vector2(x_merge, start.y),          # 1. Knick: horizontale Annäherung
-			Vector2(x_merge, y_merge),          # 2. Knick: vertikal einsteuern
-			end
-		]
+	# 4 = MERGE Mitte:
+	#     direkt horizontal rein
+	if route_type == 4:
+		return [start, end]
 
-
-	# ========================================================
-	# 0) DEFAULT — Normal Horizontal Routing
-	# ========================================================
+	# 0 / Default: Standard-Dogleg (z. B. Task → Task)
 	var mid_x := (start.x + end.x) * 0.5
 	return [
 		start,
@@ -89,13 +59,40 @@ func _compute_path(start: Vector2, end: Vector2, route_type:int) -> PackedVector
 	]
 
 
-# ============================================================
-# Pfeil-Orientierung
-# ============================================================
-func _update_arrow(pts:PackedVector2Array):
-	if pts.size() < 2: return
-	var p1 = pts[pts.size()-2]
-	var p2 = pts[pts.size()-1]
-	var dir = (p2-p1).normalized()
+func _update_arrow(pts: PackedVector2Array):
+	if pts.size() < 2:
+		return
+
+	var p1: Vector2 = pts[pts.size()-2]
+	var p2: Vector2 = pts[pts.size()-1]
+	var dir: Vector2 = (p2 - p1).normalized()
+
+	# Pfeil leicht zurück ziehen
 	arrow.global_position = p2 - dir * ARROW_BACK_OFFSET
-	arrow.rotation = dir.angle()
+
+	# ----------------------------------------------
+	# ⭐ MERGE-Gateway Fix — Output MUSS nach rechts!
+	# ----------------------------------------------
+	# Fall: Letzter Flow-Pfad verläuft überwiegend vertikal → korrigieren auf →
+	if abs(dir.x) < abs(dir.y) and p2.x > p1.x:
+		arrow.rotation = deg_to_rad(0)      # →
+		return
+
+	# Falls er theoretisch nach links zeigen würde
+	if abs(dir.x) < abs(dir.y) and p2.x < p1.x:
+		arrow.rotation = deg_to_rad(180)    # ← (selten, aber safe)
+		return
+
+
+	if abs(dir.x) > abs(dir.y):
+		# Horizontal dominiert
+		if dir.x > 0:
+			arrow.rotation = deg_to_rad(0)    # →
+		else:
+			arrow.rotation = deg_to_rad(180)  # ←
+	else:
+		# Vertikal dominiert
+		if dir.y > 0:
+			arrow.rotation = deg_to_rad(90)   # ↓
+		else:
+			arrow.rotation = deg_to_rad(-90)  # ↑

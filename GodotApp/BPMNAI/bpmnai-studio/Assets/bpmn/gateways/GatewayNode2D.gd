@@ -178,20 +178,54 @@ func _update_visuals():
 ## -------------------------------------------------------------
 func get_input_ports() -> Array:
 	return [port_input]
-
+	
 func get_output_ports() -> Array:
 	var ports := []
 
-	if port_output_x:
-		ports.append(port_output_x)
+	var t = str(element_type) # gateway type
 
-	if port_output_y_top:
-		ports.append(port_output_y_top)
+	# ======================================================
+	# 1) PARALLEL (AND) → Top → Mid → Bottom (3-way Split)
+	# ======================================================
+	if t == "parallel_gateway":
+		if port_output_y_top: ports.append(port_output_y_top)
+		if port_output_x: ports.append(port_output_x)
+		if port_output_y: ports.append(port_output_y)
+		return ports
 
-	if port_output_y:
-		ports.append(port_output_y)
+	# ======================================================
+	# 2) XOR / Inclusive → Mid → Bottom (klassisch BPMN)
+	# ======================================================
+	if t == "exclusive_gateway" or t == "inclusive_gateway":
+		if port_output_x: ports.append(port_output_x)   # Mitte zuerst
+		if port_output_y: ports.append(port_output_y)   # dann unten
+		return ports
 
+	# ======================================================
+	# 3) Fallback (wenn mal ein exotisches Gateway kommt)
+	# ======================================================
+	if port_output_x: ports.append(port_output_x)
+	if port_output_y_top: ports.append(port_output_y_top)
+	if port_output_y: ports.append(port_output_y)
 	return ports
+
+
+
+func get_output_ports_sorted() -> Array:
+	var ports = [
+		{"node": port_output_y_top, "y": port_output_y_top.global_position.y},
+		{"node": port_output_x,     "y": port_output_x.global_position.y},
+		{"node": port_output_y,     "y": port_output_y.global_position.y}
+	]
+
+	ports = ports.filter(func(p): return p["node"] != null)
+	ports.sort_custom(func(a,b): return a["y"] < b["y"])
+
+	var sorted:= []
+	for p in ports:
+		sorted.append(p["node"])
+	return sorted
+
 
 func get_port_global_position(port: Area2D) -> Vector2:
 	return port.global_position
@@ -214,3 +248,20 @@ func _apply_labels_from_outputs():
 	if outputs.has("down"):
 		output_label_y.visible = true
 		output_label_y.text = outputs["down"]
+
+func get_merge_ports() -> Array:
+	var arr: Array = []
+
+	# [0] = Top-Input  (oben)
+	if port_output_y_top:
+		arr.append(port_output_y_top)
+
+	# [1] = Mid-Input  (links)
+	if port_input:
+		arr.append(port_input)
+
+	# [2] = Bottom-Input (unten)
+	if port_output_y:
+		arr.append(port_output_y)
+
+	return arr
