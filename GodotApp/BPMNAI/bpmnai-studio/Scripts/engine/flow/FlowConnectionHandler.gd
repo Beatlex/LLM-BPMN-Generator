@@ -29,6 +29,15 @@ func connect_flows(nodes: Dictionary) -> Array:
 		var src_ports: Array = src.get_output_ports()
 		var branch_count: int = outs.size()
 
+		# Labels NUR entfernen wenn Parallel-Gateway Split/Merge ist
+		if is_gateway_src and src_type == "parallel_gateway":
+			var is_split_gateway := branch_count > 1
+			var is_merge_gateway := _incoming_count(id, nodes) > 1
+
+			if src.has_method("apply_gateway_label_logic"):
+				src.apply_gateway_label_logic(is_split_gateway, is_merge_gateway)
+
+
 		for i in range(branch_count):
 			var target_id = outs[i]
 			if not nodes.has(target_id):

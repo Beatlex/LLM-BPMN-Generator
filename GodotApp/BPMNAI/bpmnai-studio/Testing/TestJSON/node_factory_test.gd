@@ -25,7 +25,7 @@ func _ready():
 	for id in nodes.keys():
 		add_child(nodes[id])
 
-	# 4) Flows erzeugen
+	# Flows erzeugen
 	var flows = flow_handler.connect_flows(nodes)
 	for f in flows:
 		add_child(f)

@@ -1,0 +1,84 @@
+[gd_scene load_steps=3 format=3 uid="uid://di1brsndyut0v"]
+
+[ext_resource type="Script" uid="uid://cbpxp473okskp" path="res://Scripts/engine/chat/LlmChatWindow.gd" id="1_fctkt"]
+[ext_resource type="Texture2D" uid="uid://cd8tkubxomlcc" path="res://Assets/Backgrounds/Chat.png" id="2_fi7vi"]
+
+[node name="LlmChatWindow" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_fctkt")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -1.0
+offset_right = 1601.0
+offset_bottom = 898.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="MarginContainer"]
+z_index = -1
+layout_direction = 1
+layout_mode = 2
+texture = ExtResource("2_fi7vi")
+expand_mode = 2
+
+[node name="MainContainer" type="HSplitContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="ChatPanel" type="VBoxContainer" parent="MarginContainer/MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Scroll" type="ScrollContainer" parent="MarginContainer/MainContainer/ChatPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Messages" type="VBoxContainer" parent="MarginContainer/MainContainer/ChatPanel/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Input" type="HBoxContainer" parent="MarginContainer/MainContainer/ChatPanel"]
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/MainContainer/ChatPanel/Input"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Send" type="Button" parent="MarginContainer/MainContainer/ChatPanel/Input"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Send"
+
+[node name="SidePanel" type="VBoxContainer" parent="MarginContainer/MainContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.37
+
+[node name="BtnRender" type="Button" parent="MarginContainer/MainContainer/SidePanel"]
+layout_mode = 2
+text = "Render"
+
+[node name="BtnClear" type="Button" parent="MarginContainer/MainContainer/SidePanel"]
+layout_mode = 2
+text = "Clear"
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/MainContainer/SidePanel"]
+modulate = Color(0.011764706, 0.011764706, 0.011764706, 1)
+self_modulate = Color(0.011764706, 0.011764706, 0.011764706, 1)
+layout_mode = 2
+text = "Status"
+
+[node name="btnBackHome" type="Button" parent="MarginContainer/MainContainer/SidePanel"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+accessibility_name = "Zurück"
+text = "Zurück"

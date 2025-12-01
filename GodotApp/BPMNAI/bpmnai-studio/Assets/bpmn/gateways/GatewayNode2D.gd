@@ -249,6 +249,12 @@ func _apply_labels_from_outputs():
 		output_label_y.visible = true
 		output_label_y.text = outputs["down"]
 
+func apply_gateway_label_logic(is_split: bool, is_merge: bool) -> void:
+	# Wenn es ein Split ODER Merge ist → keine Labels!
+	if is_split or is_merge:
+		if output_label_x: output_label_x.visible = false
+		if output_label_y: output_label_y.visible = false
+
 func get_merge_ports() -> Array:
 	var arr: Array = []
 

@@ -1,8 +1,8 @@
 extends Node2D
-
-var json_loader := BpmnJsonLoaderV1.new()  # Oder den neuen Klassennamen
+# Not WORKING ! NEW IMPLEMENTATION ! Delete Later.
+var json_loader := preload("res://Scripts/engine/Loader/BpmnJsonLoader.gd").new() 
 var layout_handler := preload("res://Scripts/engine/layout/LayoutHandler.gd").new()
-var flow_handler := preload("res://Scripts/engine/layout/FlowConnectionHandler.gd").new()
+var flow_handler := preload("res://Scripts/engine/flow/FlowConnectionHandler.gd").new()
 
 var test_json := {
 	"elements": [

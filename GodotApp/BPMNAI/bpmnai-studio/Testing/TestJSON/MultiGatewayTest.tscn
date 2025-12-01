@@ -27,3 +27,20 @@ offset = Vector2(900, 200)
 zoom = Vector2(0.7, 0.7)
 script = ExtResource("6_wb8k5")
 target_root_path = NodePath("../DiagrammRoot")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="btnBackHome" type="Button" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.0
+offset_top = -31.0
+offset_right = 31.0
+grow_horizontal = 2
+grow_vertical = 0
+accessibility_name = "Zurück"
+text = "Zurück"
+metadata/_edit_use_anchors_ = true

@@ -1,49 +1,47 @@
-extends Node2D
+extends Control
 
-enum GatewayType { XOR, AND, OR, EMPTY }
+### UI-Referenzen
+@onready var file_dialog      : FileDialog = $MarginContainer/FileDialog
+@onready var btn_load_json    : Button     = $MarginContainer/CenterContainer/VBoxContainer/BtnLoadJson
+@onready var btn_example      : Button     = $MarginContainer/CenterContainer/VBoxContainer/BtnLoadExample
+@onready var btn_new          : Button     = $MarginContainer/CenterContainer/VBoxContainer/BtnNewDiagram
+@onready var btn_exit         : Button     = $MarginContainer/CenterContainer/VBoxContainer/Beenden
 
-@export var element_id: String = ""
-@export var element_name: String = ""
-@export var gateway_type: GatewayType = GatewayType.XOR
+### Szenenpfade
+const CHAT_SCENE  := "res://ui/chat/LlmChatWindow.tscn"
+const LOADER_SCENE := "res://Scripts/engine/Loader/BpmnJsonLoader.tscn"
+const EXAMPLE_SCENE := "res://Testing/TestJSON/MultiGatewayTest.tscn"
 
-@onready var sprite: Sprite2D = $Sprite2D
-@onready var label: Label = $Label
+func _ready() -> void:
+	file_dialog.hide()
 
-var tex_xor   = preload("res://Assets/bpmn/gateways/XOR_Gateway.png")
-var tex_and   = preload("res://Assets/bpmn/gateways/AND_Gateway.png")
-var tex_or    = preload("res://Assets/bpmn/gateways/OR_Gateway.png")
-var tex_empty = preload("res://Assets/bpmn/gateways/Gateway_Empty.png")
+	btn_load_json.pressed.connect(_on_load_json_pressed)
+	btn_example.pressed.connect(_on_example_pressed)
+	btn_new.pressed.connect(_on_new_pressed)
+	btn_exit.pressed.connect(func(): get_tree().quit())
 
-func _ready():
-	_update_visuals()
-	if element_name != "":
-		label.text = element_name
+	file_dialog.file_selected.connect(_on_file_selected)
 
-func setup_from_element(element: Dictionary) -> void:
-	element_id = element.get("id", "")
-	element_name = element.get("name", "")
-	label.text = element_name
+func _on_load_json_pressed() -> void:
+	file_dialog.popup()
 
-	var t = element.get("type", "")
-	match t:
-		"exclusive_gateway":
-			gateway_type = GatewayType.XOR
-		"parallel_gateway":
-			gateway_type = GatewayType.AND
-		"inclusive_gateway":
-			gateway_type = GatewayType.OR
-		_:
-			gateway_type = GatewayType.EMPTY
+func _on_file_selected(path:String) -> void:
+	var text = FileAccess.get_file_as_string(path)
+	var parsed = JSON.parse_string(text)
 
-	_update_visuals()
+	if typeof(parsed) != TYPE_ARRAY:
+		push_error("[HOME] ❌ JSON ist kein BPMN-Array!")
+		return
 
-func _update_visuals():
-	match gateway_type:
-		GatewayType.XOR:
-			sprite.texture = tex_xor
-		GatewayType.AND:
-			sprite.texture = tex_and
-		GatewayType.OR:
-			sprite.texture = tex_or
-		GatewayType.EMPTY:
-			sprite.texture = tex_empty
+	_start_bpmn(parsed)
+
+func _on_example_pressed() -> void:
+	get_tree().change_scene_to_file(EXAMPLE_SCENE)
+
+func _on_new_pressed() -> void:
+	get_tree().change_scene_to_file(CHAT_SCENE)  
+
+func _start_bpmn(data:Array) -> void:
+	get_tree().change_scene_to_file(LOADER_SCENE)
+	await get_tree().process_frame           
+	get_tree().current_scene.call_deferred("load_json_data", data)

@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2ls31t28u8w7"]
+
+[ext_resource type="Script" uid="uid://cow24iabx4wjn" path="res://Scripts/engine/Loader/BpmnJsonLoader.gd" id="1_4aju1"]
+[ext_resource type="Script" uid="uid://dmda2r20xgl83" path="res://Scripts/engine/Loader/Rendercamera_2d.gd" id="2_it2fy"]
+
+[node name="BpmnJsonRunner" type="Node2D"]
+script = ExtResource("1_4aju1")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="btnBackHome" type="Button" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -31.0
+offset_top = -31.0
+offset_right = 31.0
+grow_horizontal = 2
+grow_vertical = 0
+accessibility_name = "Zurück"
+text = "Zurück"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+script = ExtResource("2_it2fy")
