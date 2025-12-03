@@ -116,22 +116,8 @@ func _on_render_last() -> void:
 	# -------------------------------------------
 	# 🚀 SAFE SCENE LOAD (kein crash möglich)
 	# -------------------------------------------
-	var scene: PackedScene = load("res://Scripts/engine/Loader/BpmnJsonLoader.tscn")
-	var runner = scene.instantiate()
-
-	get_tree().root.add_child(runner)
-	get_tree().current_scene.queue_free()
-	get_tree().current_scene = runner
-
-	# JSON übergeben – aber deferred!
-	runner.call_deferred("load_json_data", parsed)
+	BPMNData.pending_bpmn = parsed
+	get_tree().change_scene_to_file("res://Scripts/engine/Loader/BpmnJsonLoader.tscn")
 
 func _on_back_home() -> void:
-	var path := "res://ui/home/Home.tscn"
-	var scene: PackedScene = load(path)
-
-	if scene == null:
-		push_error("[LLMChatWindow] Home.tscn nicht gefunden!")
-		return
-
-	get_tree().change_scene_to_packed(scene)  # <<< wichtig!
+	get_tree().change_scene_to_file("res://ui/home/Home.tscn")

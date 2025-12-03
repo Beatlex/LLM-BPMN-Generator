@@ -26,14 +26,19 @@ func _on_load_json_pressed() -> void:
 	file_dialog.popup()
 
 func _on_file_selected(path:String) -> void:
-	var text = FileAccess.get_file_as_string(path)
+	var text   := FileAccess.get_file_as_string(path)
 	var parsed = JSON.parse_string(text)
 
 	if typeof(parsed) != TYPE_ARRAY:
 		push_error("[HOME] ❌ JSON ist kein BPMN-Array!")
 		return
 
-	_start_bpmn(parsed)
+	# 1) Daten global ablegen
+	BPMNData.pending_bpmn = parsed
+
+	# 2) Szene sauber wechseln – ohne await, ohne call_deferred
+	get_tree().change_scene_to_file(LOADER_SCENE)
+
 
 func _on_example_pressed() -> void:
 	get_tree().change_scene_to_file(EXAMPLE_SCENE)

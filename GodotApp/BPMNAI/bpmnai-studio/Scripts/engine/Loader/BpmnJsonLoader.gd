@@ -28,34 +28,22 @@ func _ready() -> void:
 		btn_back.pressed.connect(_back_to_home)
 	else:
 		push_error("[BpmnJsonLoader] btnBackHome nicht gefunden! Pfad prüfen.")
+
 	if cam:
 		cam.make_current()
 	else:
 		push_error("[Runner] Keine Camera2D gefunden!")
 
-
+	# === Daten aus dem globalen Container holen (Home-Pfad) ===
+	if not BPMNData.pending_bpmn.is_empty():
+		current_data = BPMNData.pending_bpmn
+		BPMNData.pending_bpmn = []  # leeren, damit kein alter Müll bleibt
+		_render_bpmn()
+	# Falls du den Loader auch anders verwendest (z.B. direkt mit load_json_data),
+	# dann einfach nichts machen, current_data wird dann von außen gesetzt.
 
 func _back_to_home() -> void:
-	var home_scene: PackedScene = load("res://ui/home/Home.tscn")
-
-	# 1) Prüfen ob die Szene korrekt geladen wurde
-	if home_scene == null:
-		push_error("[BPMN-Runner] FEHLER: Home.tscn nicht gefunden!")
-		return
-
-	# 2) Prüfen ob Home bereits existiert (Schutz vor Duplikaten)
-	for child in get_tree().root.get_children():
-		if child is Control and child.name == "Home":
-			get_tree().root.remove_child(child)
-			child.queue_free()
-
-	# 3) Sauber neuen Home-Screen laden
-	var home = home_scene.instantiate()
-	get_tree().root.add_child(home)
-	home.name = "Home" # wichtig, damit doppelte Instanzen verhindert werden
-
-	# 4) Runner-Szene beenden
-	queue_free()
+	get_tree().change_scene_to_file("res://ui/home/Home.tscn")
 
 ### -------------------------------------------
 ### ⚡ Generiert & zeichnet das BPMN Diagramm

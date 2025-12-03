@@ -23,13 +23,13 @@ Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten), um eine
 JSON Format (Pflicht):
 [
   {
-    "element_id": "0",
-    "element_name": "Start",
-    "element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
-    "flows_to": ["1","2"],
-    "outputs": { "right": "Text", "down": "Text" },
-    "lane_id":"",
-    "pool_id":""
+	"element_id": "0",
+	"element_name": "Start",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "Text", "down": "Text" },
+	"lane_id":"",
+	"pool_id":""
   }
 ]
 

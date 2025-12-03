@@ -5,6 +5,9 @@ extends Node2D
 @onready var flow_handler = preload("res://Scripts/engine/flow/FlowConnectionHandler.gd").new()
 @onready var flow_scene = preload("res://Assets/bpmn/nodes/FlowLine2D.tscn")
 
+@onready var btn_back: Button = $UI/btnBackHome
+
+
 func _ready():
 	# JSON laden
 	var file = FileAccess.open("res://Testing/TestJSON/Burger‑Herstellung.json", FileAccess.READ)
@@ -14,6 +17,11 @@ func _ready():
 	if typeof(data) != TYPE_ARRAY:
 		push_error("JSON root must be array!")
 		return
+		
+	if btn_back:
+		btn_back.pressed.connect(_back_to_home)
+	else:
+		push_error("[MultiGatewayTest] btnBackHome nicht gefunden!")
 
 	# Nodes erzeugen
 	var nodes = factory.build_all(data)
@@ -44,3 +52,6 @@ func _ready():
 			  " | Y:", round(n.global_position.y))
 
 	print("=====================================================\n")
+	
+func _back_to_home() -> void:
+	get_tree().change_scene_to_file("res://ui/home/Home.tscn")
