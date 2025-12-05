@@ -3,6 +3,9 @@ BPMN-AI Renderer
 Ein KI-gestütztes Tool zur automatischen Erstellung, Visualisierung und Validierung von BPMN-Modellen.
 Version v0.1 Early Preview
 
+REQUIRES:
+Local Installed Ollama + Models 
+
 🚀 Überblick
 
 Der BPMN-AI Renderer ist ein interaktives Desktop-Tool (Godot Engine 4.5), das natürliche Sprache mithilfe eines lokalen Large Language Models (LLM, z. B. über Ollama) in korrekte, strukturierte BPMN-Prozessmodelle umwandelt.
