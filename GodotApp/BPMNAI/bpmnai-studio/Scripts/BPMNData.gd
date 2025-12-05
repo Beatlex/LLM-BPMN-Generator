@@ -1,5 +1,5 @@
-extends RefCounted
+extends Node
 class_name BPMNData
 
-# Globale, statische Ablage für das nächste BPMN-JSON
+# Globale Ablage für BPMN-Daten
 static var pending_bpmn: Array = []

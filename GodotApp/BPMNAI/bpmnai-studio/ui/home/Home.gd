@@ -5,12 +5,15 @@ extends Control
 @onready var btn_load_json    : Button     = $MarginContainer/CenterContainer/VBoxContainer/BtnLoadJson
 @onready var btn_example      : Button     = $MarginContainer/CenterContainer/VBoxContainer/BtnLoadExample
 @onready var btn_new          : Button     = $MarginContainer/CenterContainer/VBoxContainer/BtnNewDiagram
+@onready var btn_settings : Button = $MarginContainer/CenterContainer/VBoxContainer/Einstellungen
 @onready var btn_exit         : Button     = $MarginContainer/CenterContainer/VBoxContainer/Beenden
+
 
 ### Szenenpfade
 const CHAT_SCENE  := "res://ui/chat/LlmChatWindow.tscn"
 const LOADER_SCENE := "res://Scripts/engine/Loader/BpmnJsonLoader.tscn"
 const EXAMPLE_SCENE := "res://Testing/TestJSON/MultiGatewayTest.tscn"
+const SETTINGS_SCENE := "res://ui/settings/settings.tscn"
 
 func _ready() -> void:
 	file_dialog.hide()
@@ -18,6 +21,7 @@ func _ready() -> void:
 	btn_load_json.pressed.connect(_on_load_json_pressed)
 	btn_example.pressed.connect(_on_example_pressed)
 	btn_new.pressed.connect(_on_new_pressed)
+	btn_settings.pressed.connect(_on_settings_pressed)
 	btn_exit.pressed.connect(func(): get_tree().quit())
 
 	file_dialog.file_selected.connect(_on_file_selected)
@@ -33,12 +37,14 @@ func _on_file_selected(path:String) -> void:
 		push_error("[HOME] ❌ JSON ist kein BPMN-Array!")
 		return
 
-	# 1) Daten global ablegen
 	BPMNData.pending_bpmn = parsed
 
-	# 2) Szene sauber wechseln – ohne await, ohne call_deferred
 	get_tree().change_scene_to_file(LOADER_SCENE)
 
+func _on_settings_pressed() -> void:
+	var err := get_tree().change_scene_to_file(SETTINGS_SCENE)
+	if err != OK:
+		push_error("[HOME] ❌ Settings-Szene konnte nicht geladen werden!")
 
 func _on_example_pressed() -> void:
 	get_tree().change_scene_to_file(EXAMPLE_SCENE)

@@ -9,7 +9,6 @@ var drag_start := Vector2()
 
 
 func _unhandled_input(event):
-	# ==== MOUSE DRAG MIDDLE CLICK ====
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_MIDDLE:
 			if event.pressed:
@@ -18,7 +17,6 @@ func _unhandled_input(event):
 			else:
 				dragging = false
 
-	# ==== ZOOM MIT MOUSEWHEEL ====
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_set_zoom(zoom.x - zoom_speed)

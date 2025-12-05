@@ -1,0 +1,121 @@
+[gd_scene load_steps=3 format=3 uid="uid://cwpjg64mdxt5d"]
+
+[ext_resource type="Texture2D" uid="uid://dk8ialpf5be37" path="res://Assets/Backgrounds/Home.png" id="1_bjc66"]
+[ext_resource type="Script" uid="uid://egowmcwu434n" path="res://ui/settings/settings.gd" id="1_hrs25"]
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_hrs25")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FileDialog" type="FileDialog" parent="MarginContainer"]
+oversampling_override = 1.0
+title = "Open a File"
+position = Vector2i(0, 36)
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json", "*.txt")
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer"]
+z_index = -1
+layout_mode = 2
+texture = ExtResource("1_bjc66")
+stretch_mode = 6
+
+[node name="CenterContainer" type="CenterContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Einstellungen"
+horizontal_alignment = 1
+
+[node name="LLMSetup" type="OptionButton" parent="MarginContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+autowrap_trim_flags = 0
+
+[node name="MasterPrompt" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Bearbeite Master Prompt"
+
+[node name="LLMTest" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Test LLM"
+
+[node name="Zurück" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "zurück"
+
+[node name="Label" type="Label" parent="MarginContainer/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "v0.1 — Early Preview"
+horizontal_alignment = 2
+vertical_alignment = 2
+
+[node name="MasterPromptPopup" type="AcceptDialog" parent="MarginContainer"]
+oversampling_override = 1.0
+title = "Setze Master Prompt"
+initial_position = 1
+size = Vector2i(1000, 692)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/MasterPromptPopup"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 992.0
+offset_bottom = 643.0
+
+[node name="PromptEditor" type="TextEdit" parent="MarginContainer/MasterPromptPopup/VBoxContainer"]
+custom_minimum_size = Vector2(0, 600)
+layout_mode = 2
+scroll_smooth = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/MasterPromptPopup/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="BtnCancel" type="Button" parent="MarginContainer/MasterPromptPopup/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Abbrechen"
+
+[node name="BtnSave" type="Button" parent="MarginContainer/MasterPromptPopup/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Speichern"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(500, 600)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+alignment = 1
+
+[node name="TestResultPanel" type="PanelContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/TestResultPanel"]
+layout_mode = 2
+
+[node name="MasterPromptOutput" type="RichTextLabel" parent="MarginContainer/VBoxContainer/TestResultPanel/MarginContainer"]
+layout_mode = 2

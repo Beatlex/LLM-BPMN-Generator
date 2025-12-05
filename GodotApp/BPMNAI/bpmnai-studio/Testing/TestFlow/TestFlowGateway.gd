@@ -7,7 +7,7 @@ extends Node2D
 @onready var flow_yes: Node2D     = $FlowLine2DJa
 @onready var flow_no: Node2D      = $FlowLine2DNein
 
-@onready var layout: LayoutEngine = $LayoutEngine
+@onready var layout = preload("res://Scripts/engine/layout/LayoutEngine.gd").new()
 
 
 func _ready():

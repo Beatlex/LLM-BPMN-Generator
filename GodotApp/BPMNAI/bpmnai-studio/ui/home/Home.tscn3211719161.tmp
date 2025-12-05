@@ -63,9 +63,9 @@ text = "Neues Diagramm erstellen"
 
 [node name="Einstellungen" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Einstellungen"
+text = "Fett Beenden"
 
-[node name="Beenden" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
+[node name="Beenden2" type="Button" parent="MarginContainer/CenterContainer/VBoxContainer"]
 layout_mode = 2
 text = "Fett Beenden"
 
