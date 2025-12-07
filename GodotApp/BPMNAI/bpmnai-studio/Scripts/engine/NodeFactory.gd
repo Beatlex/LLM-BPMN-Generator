@@ -35,7 +35,7 @@ func build_all(elements: Array) -> Dictionary:
 	for element in elements:
 		var node = create_node(element)
 		if node != null:
-			# wir debuggen: random position zum Testen
+			#debuggen: random position zum Testen
 			node.global_position = Vector2(
 				randi_range(50, 800),
 				randi_range(50, 500)

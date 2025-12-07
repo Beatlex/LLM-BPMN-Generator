@@ -17,13 +17,13 @@ ein gültiges BPMN-JSON auszugeben.
 JSON Format:
 [
   {
-    "element_id": "0",
-    "element_name": "",
-    "element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
-    "flows_to": ["1","2"],
-    "outputs": { "right": "", "down": "" },
-    "lane_id":"",
-    "pool_id":""
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
   }
 ]
 
@@ -41,11 +41,11 @@ func _ready() -> void:
 	
 const SETTINGS_FILE := "user://llm_settings.cfg"
 
-#  Öffentlicher Endpunkt – wird vom ChatController genutzt
+#  open Endpunkt
 func chat(messages:Array) -> String:
 	var reply = await _send(messages)
 
-	# Falls Null/Leer → Wiederholen
+	# Falls Null/Leer -> Wiederholen
 	if enable_retry and (reply == "" or reply.begins_with("ERROR:")):
 		print_rich("[color=orange][OllamaClient] ⚠ Keine Antwort → Retry...[/color]")
 		reply = await _send(messages) 
@@ -55,7 +55,7 @@ func chat(messages:Array) -> String:
 
 	return reply
 
-#  PRIVATE — HTTP Request Engine (mit Schutz)
+#  PRIVATE -> HTTP Request Engine 
 func _send(messages:Array) -> String:
 	var http := HTTPRequest.new()
 	add_child(http)
@@ -161,7 +161,7 @@ func list_available_models() -> Array:
 
 	for m in parsed["models"]:
 		if typeof(m) == TYPE_DICTIONARY:
-			# je nach Ollama-Version heißt das Feld 'name' oder 'model'
+			# je nach Ollama-Version 'name' oder 'model' mit Fallback zur sicherheit
 			if m.has("name"):
 				result.append(str(m["name"]))
 			elif m.has("model"):

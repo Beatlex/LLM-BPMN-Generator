@@ -35,7 +35,7 @@ func _input(event):
 	if event.is_action_released("pan"):
 		pan_active = false
 
-	# --- While Panning (Mouse Motion) ---
+	# --- While Panning ---
 	if event is InputEventMouseMotion and pan_active:
 		var delta = event.relative
 		cam.position -= delta

@@ -37,10 +37,7 @@ func apply_layout(all_nodes: Array) -> void:
 
 	calculate_positions(layer_map, lane_map)
 
-
-# ---------------------------------------------------------
-# 1. Layer-Zuweisung via DFS
-# ---------------------------------------------------------
+#Layer-Zuweisung
 func assign_layers(all_nodes: Array) -> Dictionary:
 
 	for node in all_nodes:
@@ -78,11 +75,7 @@ func dfs(n, depth):
 			continue
 		dfs(_node_map[target_id], depth + 1)
 
-
-
-# ---------------------------------------------------------
 # 2. Lane-Zuweisung
-# ---------------------------------------------------------
 func assign_lanes(all_nodes: Array) -> Dictionary:
 	var lane_map := {}
 	var lane_indices := {}
@@ -97,10 +90,7 @@ func assign_lanes(all_nodes: Array) -> Dictionary:
 
 	return lane_map
 
-
-# ---------------------------------------------------------
 # 3. Positionierung
-# ---------------------------------------------------------
 func calculate_positions(layer_map: Dictionary, lane_map: Dictionary) -> void:
 	for node in lane_map.keys():
 		var layer = layer_map.get(node, 0)

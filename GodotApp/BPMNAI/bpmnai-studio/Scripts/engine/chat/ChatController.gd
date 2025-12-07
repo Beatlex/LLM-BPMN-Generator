@@ -7,18 +7,14 @@ signal response_ready(text: String)
 
 var client: OllamaClient
 var messages: Array = []          
-var history_limit := 8              # Requests anzahl
+var history_limit := 8              # Requests anzahlen
 
-
-# ===================================================================
-#   READY
-# ===================================================================
 func _ready() -> void:
 	client = OllamaClient.new()
 	add_child(client)
 	_log("ChatController bereit, OllamaClient angehängt.")
 
-# MasterPrompt leer → default Fallback
+# MasterPrompt leer -> default Fallback
 	var master := client.master_prompt.strip_edges()
 
 	if master == "":
@@ -33,13 +29,13 @@ ein gültiges BPMN-JSON auszugeben.
 JSON Format:
 [
   {
-    "element_id": "0",
-    "element_name": "",
-    "element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
-    "flows_to": ["1","2"],
-    "outputs": { "right": "", "down": "" },
-    "lane_id":"",
-    "pool_id":""
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
   }
 ]
 
@@ -77,7 +73,6 @@ func request(user_text: String) -> void:
 	response_ready.emit(reply)
 
 func _save_chat_log() -> void:
-	# Ordner sicherstellen
 	var root := DirAccess.open("res://")
 	if root == null:
 		push_error("❌ Konnte Projekt-Root nicht öffnen!")
@@ -85,7 +80,6 @@ func _save_chat_log() -> void:
 
 	root.make_dir_recursive("res://Logs/ChatLogs")
 
-	# Dateiname
 	var timestamp := Time.get_datetime_string_from_system().replace(":", "-")
 	var file_path := "res://Logs/ChatLogs/chat_" + timestamp + ".txt"
 
@@ -103,9 +97,6 @@ func _save_chat_log() -> void:
 	_log("💾 Chat-Log gespeichert unter: " + file_path)
 
 
-# ===================================================================
-#   SAVE BPMN JSON TO TEST FOLDER
-# ===================================================================
 func save_bpmn_json(json_array: Array) -> String:
 	# Ordner sicherstellen
 	var root := DirAccess.open("res://")

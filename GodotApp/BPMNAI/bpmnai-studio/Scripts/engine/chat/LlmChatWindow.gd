@@ -24,7 +24,6 @@ func _ready() -> void:
 	btn_clear.pressed.connect(_on_clear)
 	btn_render.pressed.connect(_on_render_last)
 
-	# 🔙 HOME zurück
 	btn_back_home.pressed.connect(_on_back_home)
 
 	status_label.text = "Bereit. Tippe eine Frage ein…"
@@ -59,7 +58,7 @@ func _add_chat(author: String, text: String, role: String = "") -> void:
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 	lbl.text = "%s:\n%s" % [author, text]
 	if role != "":
-		lbl.set_meta("role", role)  # "user" oder "assistant"
+		lbl.set_meta("role", role)  
 	messages_box.add_child(lbl)
 	_scroll_to_bottom()
 
@@ -113,9 +112,6 @@ func _on_render_last() -> void:
 
 	status_label.text = "Rendering…"
 
-	# -------------------------------------------
-	# 🚀 SAFE SCENE LOAD (kein crash möglich)
-	# -------------------------------------------
 	BPMNData.pending_bpmn = parsed
 	get_tree().change_scene_to_file("res://Scripts/engine/Loader/BpmnJsonLoader.tscn")
 

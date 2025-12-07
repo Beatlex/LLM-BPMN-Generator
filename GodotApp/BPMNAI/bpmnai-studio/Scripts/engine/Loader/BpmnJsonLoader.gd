@@ -31,7 +31,7 @@ func _ready() -> void:
 
 	if not BPMNData.pending_bpmn.is_empty():
 		current_data = BPMNData.pending_bpmn
-		BPMNData.pending_bpmn = []  # leeren, damit kein alter Müll bleibt
+		BPMNData.pending_bpmn = []  # leeren, damit kein Müll bleibt
 		_render_bpmn()
 
 func _back_to_home() -> void:

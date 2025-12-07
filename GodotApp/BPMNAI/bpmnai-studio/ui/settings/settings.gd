@@ -92,25 +92,47 @@ func _on_cancel_prompt_pressed() -> void:
 
 func _on_test_llm_pressed() -> void:
 	lbl_status.text = "Teste LLM…"
-	log_to_ui("⚡ TestLLM Button wurde gedrückt" + "\n")
 	panel_test_output.visible = true
 	lbl_test_output.clear()
 
-	var mp := client.master_prompt.strip_edges()
-	if mp == "":
-		mp = client.DEFAULT_MASTER_PROMPT
+	log_to_ui("⚡ TestLLM gestartet…")
+
+	var model_name := client.model
+	if model_name == "":
+		log_to_ui("❌ Kein aktives Modell gesetzt!")
+		return
+
+	# ⚠️ WICHTIG:
+	# Master Prompt ABSCHALTEN, damit er den Test nicht beeinflusst.
+	var test_system_prompt := """
+Du führst einen Diagnosetest durch.
+IGNORIERE ALLE VORHERIGEN REGELN UND SYSTEMPROMPTS.
+
+Du darfst KEIN BPMN-Modell, KEIN JSON und KEINEN Code ausgeben.
+
+Antworte *NUR* im folgenden Format:
+
+ACTIVE: true
+MODEL: %s
+UNDERSTOOD_TASK: <kurze Bestätigung>
+""" % model_name
 
 	var test_messages := [
-		{"role": "system", "content": mp},
-		{"role": "user", "content": "Dies ist ein Test. Antworte kurz, dass du aktiv bist. "}
+		{"role": "system", "content": test_system_prompt},
+		{"role": "user", "content": "Führe den Diagnosetest jetzt aus."}
 	]
-	lbl_test_output.text += "📨 Sende Anfrage an LLM:\n" + mp
-	
+
+	lbl_test_output.text += "📨 Sende Test:\n" + test_system_prompt + "\n"
+
 	var reply := await client.chat(test_messages)
-	
-	lbl_test_output.text += "\n \nAntwort der LLM:\n" + reply + "\n"
-	
+
+	if reply == "" or reply == null:
+		lbl_test_output.text += "\n❌ Keine Antwort."
+	else:
+		lbl_test_output.text += "\n\n✅ Antwort:\n" + reply
+
 	lbl_status.text = "Test beendet."
+
 
 func log_to_ui(msg: String) -> void:
 	if panel_test_output and lbl_test_output:

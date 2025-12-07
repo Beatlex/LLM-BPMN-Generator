@@ -15,12 +15,10 @@ func connect_flows(nodes: Dictionary) -> Array:
 		if not src.has_method("get_output_ports"):
 			continue
 
-		# --- Children nach Y sortiert (oben → unten) ---
 		var outs: Array = _sorted_children(src, nodes)
 		if outs.is_empty():
 			continue
 
-		# --- Typquelle bestimmen ---
 		var src_type: String = ""
 		if "element_type" in src:
 			src_type = str(src.element_type)
@@ -29,7 +27,6 @@ func connect_flows(nodes: Dictionary) -> Array:
 		var src_ports: Array = src.get_output_ports()
 		var branch_count: int = outs.size()
 
-		# Labels NUR entfernen wenn Parallel-Gateway Split/Merge ist
 		if is_gateway_src and src_type == "parallel_gateway":
 			var is_split_gateway := branch_count > 1
 			var is_merge_gateway := _incoming_count(id, nodes) > 1
@@ -50,37 +47,35 @@ func connect_flows(nodes: Dictionary) -> Array:
 			var dst_ports: Array = dst.get_input_ports()
 			if dst_ports.is_empty():
 				continue
-			var dst_port: Node2D = dst_ports[0]   # Default: erster Input
+			var dst_port: Node2D = dst_ports[0] 
 
 			var is_split := branch_count > 1
 			var is_merge := _incoming_count(target_id, nodes) > 1
 
-			# Zieltyp (für Merge-Erkennung)
 			var dst_type: String = ""
 			if "element_type" in dst:
 				dst_type = str(dst.element_type)
 			var is_gateway_dst: bool = dst_type.ends_with("_gateway") or dst_type == "gateway"
 
 			var src_port_index := 0
-			var route_type := 0      # 0 = Standard-Dogleg
+			var route_type := 0
 
 			if is_split and is_gateway_src:
 
-				# --- Parallel-Split mit 3 Branches (Top/Mid/Bottom) ---
 				if src_type == "parallel_gateway" and branch_count == 3:
 					match i:
 						0:
-							# oberer Task → Top-Port
-							src_port_index = 0        # get_output_ports(): [Top, Mid, Bottom]
-							route_type     = 2        # Top-Branch (↑ →)
+							# oberer Task 
+							src_port_index = 0
+							route_type     = 2
 						1:
-							# mittlerer Task → Mid-Port
-							src_port_index = 1        # Mitte
-							route_type     = 0        # horizontal
+							# mittlerer Task 
+							src_port_index = 1
+							route_type     = 0
 						2:
-							# unterer Task → Bottom-Port
-							src_port_index = 2        # unten
-							route_type     = 1        # Bottom-Branch (↓ →)
+							# unterer Task
+							src_port_index = 2
+							route_type     = 1
 
 				# --- XOR-Split mit 2 Branches (Mid + Bottom) ---
 				elif src_type == "exclusive_gateway" and branch_count == 2:
@@ -91,7 +86,7 @@ func connect_flows(nodes: Dictionary) -> Array:
 						src_port_index = 2    # Bottom
 						route_type     = 1    # ↓ →
 
-				# --- generischer Fallback (Inclusive etc.) ---
+				# --- generischer Fallback ---
 				else:
 					src_port_index = min(i, src_ports.size() - 1)
 					match src_port_index:
@@ -105,42 +100,41 @@ func connect_flows(nodes: Dictionary) -> Array:
 				var incoming_order = _sorted_incoming(target_id, nodes)
 				var branch_index = incoming_order.find(id)
 				if branch_index == -1:
-					branch_index = 1   # Fallback → Mitte
+					branch_index = 1   
 
-				# Richtigen Input-Port des Gateways nutzen
+				# Input-Port des Gateways nutzen
 				if dst.has_method("get_merge_ports"):
 					var merge_ports: Array = dst.get_merge_ports()
 					if branch_index < merge_ports.size():
 						dst_port = merge_ports[branch_index]
 
-				# Quelle ist IMMER der Task-Output (einziger Port)
+				# Quelle IMMER Task-Output
 				src_port_index = 0
 
-				# Route-Typ:
+				# Route-Typen:
 				# 0 = XOR / normal
 				# 1 = Split bottom
 				# 2 = Split top
-				# 3 = Merge top/bottom (vertikal rein)
-				# 4 = Merge Mitte (horizontal rein)
+				# 3 = Merge top/bottom 
+				# 4 = Merge Mitte 
 				if branch_index == 1:
-					route_type = 4      # Mitte → horizontaler Merge
+					route_type = 4      # Mitte -> horizontaler Merge
 				else:
-					route_type = 3      # Top oder Bottom → vertikaler Merge
+					route_type = 3      # Top oder Bottom -> vertikaler Merge
 
 			elif is_gateway_src and not is_split:
 				if src_type == "parallel_gateway":
-					# get_output_ports(): [Top, Mid(X), Bottom]
 					src_port_index = min(1, src_ports.size() - 1)   # Mid/X
 				else:
-					# XOR mit einem Ausgang → Mitte reicht
+					# XOR mit einem Ausgang -> Mitte reicht
 					src_port_index = 0
-				route_type = 0    # normale horizontale Verbindung
+				route_type = 0
 
 			else:
 				src_port_index = min(i, src_ports.size() - 1)
 				route_type = 0
 
-			# --- Sicherheit & Flow erzeugen ---
+			# --- Flow erzeugen ---
 			src_port_index = clamp(src_port_index, 0, src_ports.size() - 1)
 			var src_port: Node2D = src_ports[src_port_index]
 
@@ -152,10 +146,7 @@ func connect_flows(nodes: Dictionary) -> Array:
 
 	return flows
 
-
-# ============================================================
-#                  Helper
-# ============================================================
+# Helper
 func _incoming_count(id: String, nodes: Dictionary) -> int:
 	var c := 0
 	for k in nodes.keys():

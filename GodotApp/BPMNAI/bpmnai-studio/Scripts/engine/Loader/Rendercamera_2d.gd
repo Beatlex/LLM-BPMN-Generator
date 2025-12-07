@@ -24,7 +24,7 @@ func _unhandled_input(event):
 			_set_zoom(zoom.x + zoom_speed)
 
 	if event is InputEventMouseMotion and dragging:
-		position -= event.relative    # Szene verschieben
+		position -= event.relative
 
 func _set_zoom(value: float):
 	var z = clamp(value, zoom_min, zoom_max)

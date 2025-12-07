@@ -17,9 +17,6 @@ func apply_layout(node_map: Dictionary) -> void:
 	_apply_gateway_vertical_offsets(node_map)
 
 
-# ---------------------------------------------------
-# Y-Offset für Gateways
-# ---------------------------------------------------
 func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 	for id in node_map.keys():
 		var gw = node_map[id]
@@ -29,11 +26,9 @@ func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 			continue
 		var type: String = String(gw.element_type)
 
-		# Nur Gateways (z.B. "exclusive_gateway", "parallel_gateway")
 		if !type.ends_with("_gateway"):
 			continue
 
-		# flows_to lesen
 		var raw = gw.flows_to
 		var flows_to: Array = []
 		if typeof(raw) == TYPE_ARRAY:
@@ -44,7 +39,7 @@ func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 
 		var count := flows_to.size()
 		if count <= 1:
-			continue  # kein Split → alles bleibt linear
+			continue
 
 		print("\n[LayoutEngine] Gateway", id, "→", count, "Branches")
 
@@ -64,25 +59,18 @@ func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 
 			match count:
 				1:
-					# keine Änderung
 					y = base_y
 				2:
-					# 0 = mittig, 1 = unten
 					y = base_y + (LANE_SPACING_Y if i == 1 else 0)
 				3:
-					# -1 = oben / 0 = Mitte / +1 = unten
 					y = base_y + (i - 1) * LANE_SPACING_Y
 				_:
-					# symmetrisch auffächern für 4+ Branches
 					y = base_y + (i - mid) * LANE_SPACING_Y
 
 			child.global_position = Vector2(x, y)
 			print("[LayoutEngine]   Child %s → (%s, %s)" %
 				[child_id, x, y])
 
-# ---------------------------------------------------
-# Linear durch das Prozessmodell
-# ---------------------------------------------------
 func _resolve_linear_order(node_map: Dictionary) -> Array:
 	var start_id := _find_start(node_map)
 	if start_id == "":
@@ -99,7 +87,6 @@ func _resolve_linear_order(node_map: Dictionary) -> Array:
 
 		var node = node_map[current]
 
-		# flows_to existiert IMMER, da export var flows_to = []
 		var raw = node.flows_to
 
 		var flows: Array = []
