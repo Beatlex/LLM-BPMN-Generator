@@ -3,8 +3,11 @@ BPMN-AI Renderer
 Ein KI-gestütztes Tool zur automatischen Erstellung, Visualisierung und Validierung von BPMN-Modellen.
 Version v0.1 Early Preview
 
-REQUIRES:
-Local Installed Ollama + Models 
+REQUIRES (Bei nutzung der LLM funktion):
+- Lokal installiertes Ollama
+- laufender Ollama Server(CMD -> ollama serve)
+- Mindesten ein installiertes Ollama Modell
+
 
 🚀 Überblick
 
