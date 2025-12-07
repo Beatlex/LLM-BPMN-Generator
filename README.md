@@ -19,18 +19,14 @@ Ziel ist eine zuverlässige, erklärbare und erweiterbare Architektur zur hybrid
 ➤ Das LLM erzeugt daraus ein standardisiertes JSON-BPMN-Modell
 ➤ Der Renderer visualisiert das Modell automatisch in BPMN-Notation
 
-Das Tool dient sowohl als Prototyp für deine Bachelorarbeit
-
+Das Tool dient sowohl als Prototyp für eine Bachelorarbeit:
 „Konzeption und prototypische Entwicklung eines LLM-basierten Assistenzsystems zur Generierung von BPMN-Modellen auf Basis dialogischer Prozesslogik“
 als auch als ernstzunehmende Grundlage für ein zukünftiges Assistenzsystem.
 
 ✨ Features
 🧠 KI-gestützte BPMN-Modellgenerierung
-
 Nutzung eines lokal ausgeführten LLMs (z. B. GPT-OSS, Llama 3, etc. über Ollama)
-
 Strukturierter Dialogansatz mit kontrolliertem Master Prompt
-
 Eingeschränkte, robuste BPMN-Domäne:
 start_event
 end_event
