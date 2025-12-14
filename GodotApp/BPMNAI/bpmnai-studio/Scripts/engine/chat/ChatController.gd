@@ -6,6 +6,7 @@ signal response_ready(text: String)
 @export var debug: bool = true
 
 var client: OllamaClient
+var validator := BpmnJsonValidator.new()
 var messages: Array = []          
 var history_limit := 8              # Requests anzahlen
 
@@ -19,12 +20,20 @@ func _ready() -> void:
 
 	if master == "":
 		master = """
-Du bist BPMN-Generator.
+Du bist ein BPMN-Generator.
 
 ZIEL:
-Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
-um einen Prozess zu erheben und anschließend **ausschließlich**
-ein gültiges BPMN-JSON auszugeben.
+Du führst einen dialogischen Erhebungsprozess durch, um einen Geschäftsprozess
+vollständig zu erfassen. Erst wenn alle Mindestanforderungen erfüllt sind,
+gibst du ausschließlich ein gültiges BPMN-JSON aus.
+
+Mindestanforderungen für die Ausgabe:
+- genau ein Start-Event
+- mindestens ein End-Event
+- jede Aktivität und jedes Gateway (außer End-Events) besitzt mindestens einen gültigen flows_to-Eintrag
+- Gateways haben mindestens zwei ausgehende Pfade
+- alle referenzierten IDs existieren
+- IDs sind strikt fortlaufend ab 0
 
 JSON Format:
 [
@@ -40,11 +49,11 @@ JSON Format:
 ]
 
 REGELN:
-1. Stelle Rückfragen wenn Infos fehlen.
-2. Maximal 5 deiner Antworten dürfen Fragen sein.
-3. IDs strikt fortlaufend.
-4. JSON muss valide sein.
-5. Keine Codeblöcke, kein Markdown.
+1. Wenn eine Mindestanforderung nicht erfüllt ist, stelle gezielt Rückfragen.
+2. Maximal 5 deiner Antworten dürfen Rückfragen enthalten.
+3. Gib niemals JSON aus, solange Anforderungen verletzt sind.
+4. Gib ausschließlich JSON aus, wenn alle Anforderungen erfüllt sind.
+5. Keine Codeblöcke, kein Markdown, keine Kommentare.
 """
 
 	messages.append({
@@ -54,23 +63,66 @@ REGELN:
 
 	_log("System-Prompt geladen: %d Zeichen" % master.length())
 
+func request(user_text: String) -> void:
+	# User-Nachricht anhängen
+	messages.append({
+		"role": "user",
+		"content": user_text
+	})
+
+	_log("Sende Chat-History an LLM (%d Nachrichten)." % messages.size())
+
+	# LLM aufrufen
+	var reply := await client.chat(messages)
+
+	_log("Antwort vom LLM (Länge=%d)" % reply.length())
+	messages.append({
+		"role": "assistant",
+		"content": reply
+	})
+
+	# Versuch: JSON parsen
+	var json := JSON.new()
+	var parse_err := json.parse(reply.strip_edges())
+
+	# ❌ Kein JSON → normaler Chatfluss
+	if parse_err != OK or not (json.data is Array):
+		_save_chat_log()
+		response_ready.emit(reply)
+		return
+
+	# ✅ JSON vorhanden → validieren
+	var result := BpmnJsonValidator.validate(json.data)
+
+	if result.valid:
+		# 🎉 Valides BPMN → speichern
+		save_bpmn_json(json.data)
+		_save_chat_log()
+		response_ready.emit(reply)
+		return
+
+	# ❌ JSON ungültig → strukturierte Rückfrage an LLM
+	var error_prompt := "Das BPMN-JSON ist formal ungültig:\n"
+	for e in result.errors:
+		error_prompt += "- " + e + "\n"
+
+	error_prompt += "\nKorrigiere das JSON. "
+	error_prompt += "Gib ausschließlich das korrigierte BPMN-JSON aus. "
+	error_prompt += "Keine Erklärungen, kein Text."
+
+	messages.append({
+		"role": "system",
+		"content": error_prompt
+	})
+
+	_log("❗ BPMN-JSON ungültig – LLM-Korrektur angefordert")
+
+	# Chat-Log trotzdem sichern
+	_save_chat_log()
 
 func _log(msg: String) -> void:
 	if debug:
 		print_rich("[color=yellow][ChatController][/color] " + msg)
-
-func request(user_text: String) -> void:
-	messages.append({"role": "user", "content": user_text})
-	_log("Sende Chat-History an LLM (%d Nachrichten)." % messages.size())
-
-	var reply := await client.chat(messages)
-
-	messages.append({"role": "assistant", "content": reply})
-	_log("Antwort vom LLM (Länge=%d)" % reply.length())
-
-	_save_chat_log()
-
-	response_ready.emit(reply)
 
 func _save_chat_log() -> void:
 	var root := DirAccess.open("res://")
@@ -98,12 +150,15 @@ func _save_chat_log() -> void:
 
 
 func save_bpmn_json(json_array: Array) -> String:
-	# Ordner sicherstellen
 	var root := DirAccess.open("res://")
-	root.make_dir_recursive("res://Testing/TestJSON")
+	if root == null:
+		push_error("❌ Konnte Projekt-Root nicht öffnen!")
+		return ""
+
+	root.make_dir_recursive("res://Logs/CreatedJson")
 
 	var timestamp := Time.get_datetime_string_from_system().replace(":", "-")
-	var file_path := "res://Testing/TestJSON/bpmn_" + timestamp + ".json"
+	var file_path := "res://Logs/CreatedJson/bpmn_" + timestamp + ".json"
 
 	var f := FileAccess.open(file_path, FileAccess.WRITE)
 	if f == null:
@@ -114,7 +169,7 @@ func save_bpmn_json(json_array: Array) -> String:
 	f.store_string(json_pretty)
 	f.close()
 
-	_log("💾 JSON gespeichert unter: " + file_path)
+	_log("💾 BPMN-JSON gespeichert unter: " + file_path)
 	return file_path
 
 func _build_message_history() -> Array:
@@ -130,3 +185,50 @@ func get_last_assistant_message() -> String:
 		if msg is Dictionary and msg.get("role", "") == "assistant":
 			return str(msg.get("content", ""))
 	return ""
+
+func try_extract_and_save_bpmn_json(reply: String) -> bool:
+	var json := JSON.new()
+	var err := json.parse(reply.strip_edges())
+
+	if err != OK:
+		return false
+
+	var data = json.data
+	if data is Array:
+		save_bpmn_json(data)
+		return true
+
+	push_error("❌ JSON erkannt, aber kein Array – BPMN-Format verletzt.")
+	return false
+	
+func try_handle_llm_reply(reply: String) -> bool:
+	var json := JSON.new()
+	if json.parse(reply.strip_edges()) != OK:
+		# Kein JSON → normales Chat-Verhalten
+		_save_chat_log()
+		return true
+
+	if not (json.data is Array):
+		return true
+
+	var result := BpmnJsonValidator.validate(json.data)
+
+	if result.valid:
+		save_bpmn_json(json.data)
+		_save_chat_log()
+		return true
+
+	# ❌ JSON ist formal falsch → gezielte Rückfrage
+	var error_text := "Das BPMN-JSON ist formal ungültig:\n"
+	for e in result.errors:
+		error_text += "- " + e + "\n"
+
+	error_text += "\nKorrigiere das JSON. Gib ausschließlich korrigiertes JSON aus."
+
+	messages.append({
+		"role": "system",
+		"content": error_text
+	})
+
+	_log("❗ JSON ungültig → LLM-Korrektur angefordert")
+	return false
