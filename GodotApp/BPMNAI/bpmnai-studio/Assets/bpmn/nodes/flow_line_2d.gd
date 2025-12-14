@@ -4,6 +4,8 @@ extends Node2D
 @onready var arrow: Sprite2D = $ArrowHead
 
 const ARROW_BACK_OFFSET := 12
+const BACKFLOW_OFFSET_Y := 140
+const BACKFLOW_OFFSET_X := 80
 
 
 func _ready():
@@ -13,7 +15,8 @@ func _ready():
 
 
 func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
-	if line == null: await ready
+	if line == null:
+		await ready
 	if line == null:
 		push_error("[FlowLine2D] ⚠ Fehlende Line2D!!")
 		return
@@ -26,7 +29,19 @@ func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
 
 
 func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVector2Array:
-	var pts: PackedVector2Array = []
+
+	# 99 = BACKFLOW (Rücksprung)
+	if route_type == 99:
+		var down_y = max(start.y, end.y) + BACKFLOW_OFFSET_Y
+		var left_x := end.x - BACKFLOW_OFFSET_X
+
+		return [
+			start,
+			Vector2(start.x, down_y),
+			Vector2(left_x, down_y),
+			Vector2(left_x, end.y),
+			end
+		]
 
 	# 1 = Bottom-Branch (Split ↓ →)
 	if route_type == 1:
@@ -38,18 +53,16 @@ func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVecto
 		var p := Vector2(start.x, end.y)
 		return [start, p, end]
 
-	# 3 = MERGE Top/Bottom:
-	#     erst auf X des Gateways, dann vertikal rein
+	# 3 = MERGE Top/Bottom
 	if route_type == 3:
 		var p := Vector2(end.x, start.y)
 		return [start, p, end]
 
-	# 4 = MERGE Mitte:
-	#     direkt horizontal rein
+	# 4 = MERGE Mitte
 	if route_type == 4:
 		return [start, end]
 
-	# 0 / Default: Standard-Dogleg (z. B. Task → Task)
+	# 0 = Default (Dogleg)
 	var mid_x := (start.x + end.x) * 0.5
 	return [
 		start,
@@ -63,36 +76,23 @@ func _update_arrow(pts: PackedVector2Array):
 	if pts.size() < 2:
 		return
 
-	var p1: Vector2 = pts[pts.size()-2]
-	var p2: Vector2 = pts[pts.size()-1]
+	var p1: Vector2 = pts[pts.size() - 2]
+	var p2: Vector2 = pts[pts.size() - 1]
 	var dir: Vector2 = (p2 - p1).normalized()
 
-	# Pfeil leicht zurück ziehen
+	# Pfeil leicht zurückziehen
 	arrow.global_position = p2 - dir * ARROW_BACK_OFFSET
 
-	# ----------------------------------------------
-	# ⭐ MERGE-Gateway Fix — Output MUSS nach rechts!
-	# ----------------------------------------------
-	# Fall: Letzter Flow-Pfad verläuft überwiegend vertikal → korrigieren auf →
-	if abs(dir.x) < abs(dir.y) and p2.x > p1.x:
-		arrow.rotation = deg_to_rad(0)      # →
-		return
-
-	# Falls er theoretisch nach links zeigen würde
-	if abs(dir.x) < abs(dir.y) and p2.x < p1.x:
-		arrow.rotation = deg_to_rad(180)    # ← (selten, aber safe)
-		return
-
-
+	# Pfeilrichtung bestimmen
 	if abs(dir.x) > abs(dir.y):
 		# Horizontal dominiert
 		if dir.x > 0:
-			arrow.rotation = deg_to_rad(0)    # →
+			arrow.rotation = deg_to_rad(0)     # →
 		else:
-			arrow.rotation = deg_to_rad(180)  # ←
+			arrow.rotation = deg_to_rad(180)   # ←
 	else:
 		# Vertikal dominiert
 		if dir.y > 0:
-			arrow.rotation = deg_to_rad(90)   # ↓
+			arrow.rotation = deg_to_rad(90)    # ↓
 		else:
-			arrow.rotation = deg_to_rad(-90)  # ↑
+			arrow.rotation = deg_to_rad(-90)   # ↑

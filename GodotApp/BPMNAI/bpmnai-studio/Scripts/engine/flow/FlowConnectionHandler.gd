@@ -19,21 +19,20 @@ func connect_flows(nodes: Dictionary) -> Array:
 		if outs.is_empty():
 			continue
 
-		var src_type: String = ""
+		var src_type := ""
 		if "element_type" in src:
 			src_type = str(src.element_type)
 
-		var is_gateway_src: bool = src_type.ends_with("_gateway") or src_type == "gateway"
+		var is_gateway_src := src_type.ends_with("_gateway") or src_type == "gateway"
 		var src_ports: Array = src.get_output_ports()
-		var branch_count: int = outs.size()
+		var branch_count := outs.size()
 
+		# Gateway-Label nur für PARALLEL (AND)
 		if is_gateway_src and src_type == "parallel_gateway":
 			var is_split_gateway := branch_count > 1
 			var is_merge_gateway := _incoming_count(id, nodes) > 1
-
 			if src.has_method("apply_gateway_label_logic"):
 				src.apply_gateway_label_logic(is_split_gateway, is_merge_gateway)
-
 
 		for i in range(branch_count):
 			var target_id = outs[i]
@@ -47,94 +46,94 @@ func connect_flows(nodes: Dictionary) -> Array:
 			var dst_ports: Array = dst.get_input_ports()
 			if dst_ports.is_empty():
 				continue
-			var dst_port: Node2D = dst_ports[0] 
+			var dst_port: Node2D = dst_ports[0]
 
-			var is_split := branch_count > 1
-			var is_merge := _incoming_count(target_id, nodes) > 1
+			# ---------- BACKFLOW-ERKENNUNG ----------
+			var is_backflow = dst.global_position.x <= src.global_position.x
 
-			var dst_type: String = ""
+			# Split / Merge nur wenn KEIN Backflow
+			var is_split = branch_count > 1 and not is_backflow
+			var is_merge = _incoming_count(target_id, nodes) > 1 and not is_backflow
+
+			var dst_type := ""
 			if "element_type" in dst:
 				dst_type = str(dst.element_type)
-			var is_gateway_dst: bool = dst_type.ends_with("_gateway") or dst_type == "gateway"
+
+			var is_gateway_dst := dst_type.ends_with("_gateway") or dst_type == "gateway"
 
 			var src_port_index := 0
 			var route_type := 0
 
-			if is_split and is_gateway_src:
+			# BACKFLOW: eigene Route, KEINE Gateway-Logik!
+			if is_backflow:
+				# immer mittlerer Ausgang, eigener Routentyp
+				src_port_index = min(1, src_ports.size() - 1)
+				route_type = 99
+
+			# SPLIT-LOGIK (nur Forward-Flows)
+			elif is_split and is_gateway_src:
 
 				if src_type == "parallel_gateway" and branch_count == 3:
 					match i:
 						0:
-							# oberer Task 
 							src_port_index = 0
-							route_type     = 2
+							route_type     = 2   # Top
 						1:
-							# mittlerer Task 
 							src_port_index = 1
-							route_type     = 0
+							route_type     = 0   # Mitte
 						2:
-							# unterer Task
 							src_port_index = 2
-							route_type     = 1
+							route_type     = 1   # Bottom
 
-				# --- XOR-Split mit 2 Branches (Mid + Bottom) ---
 				elif src_type == "exclusive_gateway" and branch_count == 2:
 					if i == 0:
-						src_port_index = 0    # Mid
-						route_type     = 0    # horizontal
+						src_port_index = 0
+						route_type     = 0
 					else:
-						src_port_index = 2    # Bottom
-						route_type     = 1    # ↓ →
+						src_port_index = 2
+						route_type     = 1
 
-				# --- generischer Fallback ---
 				else:
 					src_port_index = min(i, src_ports.size() - 1)
 					match src_port_index:
-						0: route_type = 0     # Mitte
-						1: route_type = 2     # Top
-						2: route_type = 1     # Bottom
+						0: route_type = 0
+						1: route_type = 2
+						2: route_type = 1
 
+			# MERGE-LOGIK (nur AND-Gateway)
 			elif is_merge and is_gateway_dst and dst_type == "parallel_gateway":
 
-				# Eingehende Branches nach Y sortieren (oben/mid/unten)
-				var incoming_order = _sorted_incoming(target_id, nodes)
-				var branch_index = incoming_order.find(id)
+				var incoming_order := _sorted_incoming(target_id, nodes)
+				var branch_index := incoming_order.find(id)
 				if branch_index == -1:
-					branch_index = 1   
+					branch_index = 1
 
-				# Input-Port des Gateways nutzen
 				if dst.has_method("get_merge_ports"):
 					var merge_ports: Array = dst.get_merge_ports()
 					if branch_index < merge_ports.size():
 						dst_port = merge_ports[branch_index]
 
-				# Quelle IMMER Task-Output
 				src_port_index = 0
 
-				# Route-Typen:
-				# 0 = XOR / normal
-				# 1 = Split bottom
-				# 2 = Split top
-				# 3 = Merge top/bottom 
-				# 4 = Merge Mitte 
 				if branch_index == 1:
-					route_type = 4      # Mitte -> horizontaler Merge
+					route_type = 4
 				else:
-					route_type = 3      # Top oder Bottom -> vertikaler Merge
+					route_type = 3
 
+			# Gateway mit nur einem Ausgang
 			elif is_gateway_src and not is_split:
 				if src_type == "parallel_gateway":
-					src_port_index = min(1, src_ports.size() - 1)   # Mid/X
+					src_port_index = min(1, src_ports.size() - 1)
 				else:
-					# XOR mit einem Ausgang -> Mitte reicht
 					src_port_index = 0
 				route_type = 0
 
+			# Normaler Task-Flow
 			else:
 				src_port_index = min(i, src_ports.size() - 1)
 				route_type = 0
 
-			# --- Flow erzeugen ---
+			# ---------- Flow erzeugen ----------
 			src_port_index = clamp(src_port_index, 0, src_ports.size() - 1)
 			var src_port: Node2D = src_ports[src_port_index]
 
@@ -146,7 +145,10 @@ func connect_flows(nodes: Dictionary) -> Array:
 
 	return flows
 
+
+# ==========================================================
 # Helper
+# ==========================================================
 func _incoming_count(id: String, nodes: Dictionary) -> int:
 	var c := 0
 	for k in nodes.keys():
