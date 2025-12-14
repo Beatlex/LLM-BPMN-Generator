@@ -7,8 +7,15 @@ signal response_ready(text: String)
 
 var client: OllamaClient
 var validator := BpmnJsonValidator.new()
+var session_logged := false
 var messages: Array = []          
-var history_limit := 8              # Requests anzahlen
+var history_limit := 8             
+
+enum LlmResultType {
+	QUESTION,
+	INVALID_JSON,
+	VALID_JSON
+}
 
 func _ready() -> void:
 	client = OllamaClient.new()
@@ -85,23 +92,22 @@ func request(user_text: String) -> void:
 	var json := JSON.new()
 	var parse_err := json.parse(reply.strip_edges())
 
-	# ❌ Kein JSON → normaler Chatfluss
+	# Kein JSON → Dialog geht weiter
 	if parse_err != OK or not (json.data is Array):
-		_save_chat_log()
 		response_ready.emit(reply)
 		return
 
-	# ✅ JSON vorhanden → validieren
+	# JSON vorhanden → validieren
 	var result := BpmnJsonValidator.validate(json.data)
 
+	# Valides BPMN → Session erfolgreich beendet
 	if result.valid:
-		# 🎉 Valides BPMN → speichern
 		save_bpmn_json(json.data)
-		_save_chat_log()
+		log_session_once()
 		response_ready.emit(reply)
 		return
 
-	# ❌ JSON ungültig → strukturierte Rückfrage an LLM
+	# JSON ungültig → strukturierte Rückfrage
 	var error_prompt := "Das BPMN-JSON ist formal ungültig:\n"
 	for e in result.errors:
 		error_prompt += "- " + e + "\n"
@@ -117,8 +123,27 @@ func request(user_text: String) -> void:
 
 	_log("❗ BPMN-JSON ungültig – LLM-Korrektur angefordert")
 
-	# Chat-Log trotzdem sichern
-	_save_chat_log()
+	# UI informieren
+	response_ready.emit("⚠️ BPMN-Modell unvollständig – Korrektur wird angefordert …")
+
+	# 🔁 LLM erneut aufrufen (einmaliger Korrekturversuch)
+	var corrected_reply := await client.chat(messages)
+
+	messages.append({
+		"role": "assistant",
+		"content": corrected_reply
+	})
+
+	response_ready.emit(corrected_reply)
+
+	# Korrigiertes JSON einmalig speichern (egal ob valide)
+	var corrected_json := JSON.new()
+	if corrected_json.parse(corrected_reply.strip_edges()) == OK:
+		if corrected_json.data is Array:
+			save_bpmn_json(corrected_json.data)
+
+	# 🔚 Session sauber beenden
+	log_session_once()
 
 func _log(msg: String) -> void:
 	if debug:
@@ -218,7 +243,7 @@ func try_handle_llm_reply(reply: String) -> bool:
 		_save_chat_log()
 		return true
 
-	# ❌ JSON ist formal falsch → gezielte Rückfrage
+	# JSON ist formal falsch → gezielte Rückfrage
 	var error_text := "Das BPMN-JSON ist formal ungültig:\n"
 	for e in result.errors:
 		error_text += "- " + e + "\n"
@@ -232,3 +257,9 @@ func try_handle_llm_reply(reply: String) -> bool:
 
 	_log("❗ JSON ungültig → LLM-Korrektur angefordert")
 	return false
+
+func log_session_once() -> void:
+	if session_logged:
+		return
+	session_logged = true
+	_save_chat_log()
