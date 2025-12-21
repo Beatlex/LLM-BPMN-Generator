@@ -94,3 +94,13 @@ ollama serve
 
 Dieses Projekt befindet sich aktuell im **Early-Preview-Stadium**. Schnittstellen, Datenformate und Funktionsumfang können sich noch aktiv ändern.
 
+---
+
+## Beispiele
+
+### Beispiel 1: Einfacher linearer Prozess
+
+**Natürliche Sprache (Eingabe):**
+> Der Prozess beginnt mit einer Bestellung.  
+> Danach wird die Bestellung geprüft.  
+> Anschließend wird sie versendet und der Prozess endet.
