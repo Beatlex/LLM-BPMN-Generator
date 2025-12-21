@@ -47,7 +47,7 @@ static func validate(json: Array) -> Dictionary:
 				if element.has("flows_to") and not element.flows_to.is_empty():
 					errors.append("End-Event %s darf keine ausgehenden Flüsse haben." % id)
 
-			"task", "exclusive_gateway", "parallel_gateway":
+			"task", "exclusive_gateway", "parallel_gateway", "inclusive_gateway":
 				if not element.has("flows_to") or element.flows_to.is_empty():
 					errors.append("Element %s (%s) hat kein flows_to." %
 						[id, element.element_type])
