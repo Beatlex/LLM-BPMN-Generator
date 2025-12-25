@@ -1,0 +1,92 @@
+=== Chat Log (2025-12-07T15-55-53) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ich möchte gerne ein Prozess darstellen. wir starten mit dem zustand das ich durst bekommen. danach gehe ich in die Küche, dort entscheide ich ob ich einen kaffee oder einen Tee möchte. Je nachdem koche ich wasser oder lasse mir einen Kaffee an der maschine raus. beides endet damit das ich meinen durst stille.
+
+[assistant] Möchten Sie den Prozess in einem Pool mit Lanes unterteilen? Falls ja, welche Lane‑IDs und Pool‑ID sollen verwendet werden?
+
+[user] nein keine Pools und Lanes.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Durst",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Gehe in die Küche",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Entscheide Kaffee oder Tee",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["3","4"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Kaffee zubereiten",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Wasser kochen",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Durst stillen",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  }
+]
+

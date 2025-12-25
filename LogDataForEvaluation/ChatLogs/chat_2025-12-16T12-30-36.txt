@@ -1,0 +1,96 @@
+=== Chat Log (2025-12-16T12-30-36) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] ich möchte einen Prozess definieren in welchem der Bauer seine Tiere Füttert.
+
+[assistant] We ask for more details.Wie soll der Prozess genau ablaufen? Gibt es z. B. Schritte wie „Tiere zählen“, „Futter beschaffen“, „Füttern“ und „Futterbestand aktualisieren“? Welche Entscheidungen oder parallelen Aktivitäten sollen berücksichtigt werden?
+
+[user] Der Bauer muss entscheiden ob er die Kühe oder die Schafe füttert. Aufgrund dieser entscheidung muss er das korrekte futter nehmen.
+
+[assistant] We will ask: "Möchten Sie noch weitere Schritte wie Zählen der Tiere oder Nachverfolgung des Futterbestands einbeziehen? Gibt es einen Abschlusspunkt, an dem der Prozess endet?"Möchten Sie noch weitere Schritte wie „Tiere zählen“, „Futterbestand aktualisieren“ oder „Abschlussbericht erstellen“ einbeziehen, oder soll der Prozess nur aus der Entscheidungswahl, dem Füttern der jeweiligen Tiergruppe und einem Endereignis bestehen?
+
+[user] nachdem das Futter gewählt wurde, sollen die Tiere gefüttert werden.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Start",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Entscheidung: Welche Tiere füttern?",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["2", "3"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Kühe füttern",
+    "element_type": "task",
+    "flows_to": ["4"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Schafe füttern",
+    "element_type": "task",
+    "flows_to": ["4"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Tiere füttern",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Ende",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+
