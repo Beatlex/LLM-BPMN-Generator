@@ -1,0 +1,100 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "Neuen Arbeiter einleren",
+		"element_type": "start_event",
+		"flows_to": [
+			"1",
+			"2",
+			"3"
+		],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	},
+	{
+		"element_id": "1",
+		"element_name": "Arbeitsplatz einrichten",
+		"element_type": "task",
+		"flows_to": [
+			"4"
+		],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	},
+	{
+		"element_id": "2",
+		"element_name": "Sicherheitsausrüstung prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"4"
+		],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	},
+	{
+		"element_id": "3",
+		"element_name": "Unterweisung",
+		"element_type": "task",
+		"flows_to": [
+			"4"
+		],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	},
+	{
+		"element_id": "4",
+		"element_name": "Parallel Join",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	},
+	{
+		"element_id": "5",
+		"element_name": "Arbeiter an Arbeitsplatz einweisen",
+		"element_type": "task",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	},
+	{
+		"element_id": "6",
+		"element_name": "Arbeiter bereit",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "lane1",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "pool1"
+	}
+]

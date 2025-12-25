@@ -1,0 +1,85 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Durst kommt auf",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "",
+		"element_type": "inclusive_gateway",
+		"flows_to": [
+			"3",
+			"4"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Eistee aus dem Kühlschrank holen",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Tee kochen",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Durst gestillt",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	}
+]
