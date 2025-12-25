@@ -1,0 +1,143 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "Start",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "1",
+		"element_name": "Arbeitsausweis erhalten",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "2",
+		"element_name": "Parallel Split",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"3",
+			"4",
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "3",
+		"element_name": "Sicherheitsschulung",
+		"element_type": "task",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "4",
+		"element_name": "Arbeitsplatz einrichten",
+		"element_type": "task",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "5",
+		"element_name": "Sicherheitsausrüstung bestellen",
+		"element_type": "task",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "6",
+		"element_name": "Parallel Join",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "7",
+		"element_name": "Entscheidung Zufriedenheit",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"8",
+			"8"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "8",
+		"element_name": "Arbeitsvertrag unterschreiben",
+		"element_type": "task",
+		"flows_to": [
+			"9"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	},
+	{
+		"element_id": "9",
+		"element_name": "Ende",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "0"
+	}
+]

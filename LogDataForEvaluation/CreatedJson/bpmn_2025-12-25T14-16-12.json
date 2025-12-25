@@ -1,0 +1,143 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "Burger event startet",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "Zubereitung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "1",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"2",
+			"3",
+			"4"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "2",
+		"element_name": "Patty Braten",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "Zubereitung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "3",
+		"element_name": "Brötchen toasten",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "Zubereitung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "4",
+		"element_name": "Topins anrichten",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "Zubereitung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "5",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "6",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"7",
+			"8"
+		],
+		"lane_id": "Entscheidung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "7",
+		"element_name": "Burger liefern (Vegetarisch)",
+		"element_type": "task",
+		"flows_to": [
+			"9"
+		],
+		"lane_id": "Lieferung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "8",
+		"element_name": "Burger liefern (Fleisch)",
+		"element_type": "task",
+		"flows_to": [
+			"9"
+		],
+		"lane_id": "Lieferung",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	},
+	{
+		"element_id": "9",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": "Restaurant"
+	}
+]

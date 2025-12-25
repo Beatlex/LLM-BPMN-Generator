@@ -1,0 +1,99 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Customer selects Glühwein",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "Customer",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "Choose payment method",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"3",
+			"4"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "4",
+			"right": "3"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Pay by card",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "Vendor",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Pay by cash",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "Vendor",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Confirm order",
+		"element_type": "task",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "Customer",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	}
+]

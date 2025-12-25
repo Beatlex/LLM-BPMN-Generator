@@ -19,7 +19,7 @@ JSON Format:
   {
 	"element_id": "0",
 	"element_name": "",
-	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway" | "inclusive_gateway",
 	"flows_to": ["1","2"],
 	"outputs": { "right": "", "down": "" },
 	"lane_id":"",
