@@ -48,7 +48,7 @@ func connect_flows(nodes: Dictionary) -> Array:
 				continue
 			var dst_port: Node2D = dst_ports[0]
 
-			# ---------- BACKFLOW-ERKENNUNG ----------
+			# ---------- BACKFLOW-ERKENNUNG FEHLERHAFT ----------
 			var is_backflow = dst.global_position.x <= src.global_position.x
 
 			# Split / Merge nur wenn KEIN Backflow
@@ -64,41 +64,92 @@ func connect_flows(nodes: Dictionary) -> Array:
 			var src_port_index := 0
 			var route_type := 0
 
-			# BACKFLOW: eigene Route, KEINE Gateway-Logik!
+			# BACKFLOW: eigene Route, KEINE Gateway-Logik Nicht final implementiert
 			if is_backflow:
 				# immer mittlerer Ausgang, eigener Routentyp
 				src_port_index = min(1, src_ports.size() - 1)
 				route_type = 99
 
-			# SPLIT-LOGIK (nur Forward-Flows)
 			elif is_split and is_gateway_src:
 
-				if src_type == "parallel_gateway" and branch_count == 3:
-					match i:
-						0:
-							src_port_index = 0
-							route_type     = 2   # Top
-						1:
-							src_port_index = 1
-							route_type     = 0   # Mitte
-						2:
-							src_port_index = 2
-							route_type     = 1   # Bottom
+				var mid := int(floor(branch_count / 2.0))
 
-				elif src_type == "exclusive_gateway" and branch_count == 2:
-					if i == 0:
-						src_port_index = 0
-						route_type     = 0
+				# PARALLEL (AND)
+				if src_type == "parallel_gateway":
+
+					# 1 Branch → Mitte
+					if branch_count == 1:
+						src_port_index = 1
+						route_type = 0
+
+					# 2 Branches → Top / Bottom
+					elif branch_count == 2:
+						if i == 0:
+							src_port_index = 0   # Top
+							route_type = 2
+						else:
+							src_port_index = 2   # Bottom
+							route_type = 1
+
+					# 3 Branches → Top / Mid / Bottom
+					elif branch_count == 3:
+						match i:
+							0:
+								src_port_index = 0
+								route_type = 2
+							1:
+								src_port_index = 1
+								route_type = 0
+							2:
+								src_port_index = 2
+								route_type = 1
+
+					# >3 Branches
 					else:
-						src_port_index = 2
-						route_type     = 1
+						# Ungerade → genau eine Mitte
+						if (branch_count % 2 == 1) and (i == mid):
+							src_port_index = 1
+							route_type = 0
+						# obere Hälfte
+						elif i < mid:
+							src_port_index = 0
+							route_type = 2
+						# untere Hälfte
+						else:
+							src_port_index = 2
+							route_type = 1
 
-				else:
-					src_port_index = min(i, src_ports.size() - 1)
-					match src_port_index:
-						0: route_type = 0
-						1: route_type = 2
-						2: route_type = 1
+				elif src_type == "exclusive_gateway" or src_type == "inclusive_gateway":
+					# XOR / OR Regeln:
+					# 1 → Mitte
+					# 2 → Mitte + Unten
+					# 3 → Oben + Mitte + Unten
+
+					if branch_count == 1:
+						src_port_index = 0   # Mitte
+						route_type = 0
+
+					elif branch_count == 2:
+						if i == 0:
+							src_port_index = 0   # Mitte
+							route_type = 0
+						else:
+							src_port_index = 1   # Unten
+							route_type = 1
+
+					else: # 3
+						match i:
+							0:
+								src_port_index = 0   # Oben
+								route_type = 2
+							1:
+								src_port_index = 1   # Mitte
+								route_type = 0
+							2:
+								src_port_index = 2   # Unten
+								route_type = 1
+
+
 
 			# MERGE-LOGIK (nur AND-Gateway)
 			elif is_merge and is_gateway_dst and dst_type == "parallel_gateway":
@@ -106,19 +157,45 @@ func connect_flows(nodes: Dictionary) -> Array:
 				var incoming_order := _sorted_incoming(target_id, nodes)
 				var branch_index := incoming_order.find(id)
 				if branch_index == -1:
-					branch_index = 1
+					branch_index = 0
+
+				var incoming_count := incoming_order.size()
+				var mid := int(floor(incoming_count / 2.0))
+
+				# Default: erster Input-Port (falls get_merge_ports fehlt)
+				var chosen_dst_port: Node2D = dst_port
 
 				if dst.has_method("get_merge_ports"):
 					var merge_ports: Array = dst.get_merge_ports()
-					if branch_index < merge_ports.size():
-						dst_port = merge_ports[branch_index]
+					if merge_ports.size() >= 3:
+						var top_port: Node2D = merge_ports[0]
+						var mid_port: Node2D = merge_ports[1]
+						var bot_port: Node2D = merge_ports[2]
 
+						# ---- Regelwerk:
+						# 1  Mitte
+						# 2  oben/unten
+						# 3  oben/mitte/unten
+						# >3  oben/unten erweitern; Mitte nur bei ungerade und exakt mid
+						if incoming_count == 1:
+							chosen_dst_port = mid_port
+						elif incoming_count == 2:
+							chosen_dst_port = top_port if branch_index == 0 else bot_port
+						elif incoming_count == 3:
+							chosen_dst_port = top_port if branch_index == 0 else (mid_port if branch_index == 1 else bot_port)
+						else:
+							if (incoming_count % 2 == 1) and (branch_index == mid):
+								chosen_dst_port = mid_port
+							elif branch_index < mid:
+								chosen_dst_port = top_port
+							else:
+								chosen_dst_port = bot_port
+
+						dst_port = chosen_dst_port
+
+				# Routing: immer sauber "seitlich rein" (kein diagonales Direct-Line)
 				src_port_index = 0
-
-				if branch_index == 1:
-					route_type = 4
-				else:
-					route_type = 3
+				route_type = 3
 
 			# Gateway mit nur einem Ausgang
 			elif is_gateway_src and not is_split:
@@ -181,16 +258,21 @@ func _sorted_children(src, nodes: Dictionary) -> Array:
 
 func _sorted_incoming(target_id: String, nodes: Dictionary) -> Array:
 	var arr: Array = []
+
 	for k in nodes.keys():
 		var n = nodes[k]
 		if not ("flows_to" in n):
 			continue
+
 		if typeof(n.flows_to) == TYPE_ARRAY and n.flows_to.has(target_id):
 			arr.append(k)
 		elif typeof(n.flows_to) == TYPE_STRING and n.flows_to == target_id:
 			arr.append(k)
 
 	arr.sort_custom(func(a, b):
+		if not nodes.has(a) or not nodes.has(b):
+			return false
 		return nodes[a].global_position.y < nodes[b].global_position.y
 	)
+
 	return arr

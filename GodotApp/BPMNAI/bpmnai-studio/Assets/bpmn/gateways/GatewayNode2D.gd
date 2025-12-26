@@ -155,9 +155,7 @@ func _apply_output_label_y(t: String) -> void:
 		output_label_y.text = t
 
 
-## -------------------------------------------------------------
-## INTERNAL — Update visuals based on type
-## -------------------------------------------------------------
+# INTERNAL — Update visuals based on type
 func _update_visuals():
 	if not sprite:
 		return
@@ -173,42 +171,41 @@ func _update_visuals():
 			sprite.texture = tex_empty
 
 
-## -------------------------------------------------------------
-## PORT API
-## -------------------------------------------------------------
 func get_input_ports() -> Array:
 	return [port_input]
 	
 func get_output_ports() -> Array:
 	var ports := []
 
-	var t = str(element_type) # gateway type
+	var t = str(element_type)
 
-	# ======================================================
-	# 1) PARALLEL (AND) → Top → Mid → Bottom (3-way Split)
-	# ======================================================
+	# PARALLEL (AND)
 	if t == "parallel_gateway":
 		if port_output_y_top: ports.append(port_output_y_top)
 		if port_output_x: ports.append(port_output_x)
 		if port_output_y: ports.append(port_output_y)
 		return ports
 
-	# ======================================================
-	# 2) XOR / Inclusive → Mid → Bottom (klassisch BPMN)
-	# ======================================================
+	# XOR / OR
 	if t == "exclusive_gateway" or t == "inclusive_gateway":
-		if port_output_x: ports.append(port_output_x)   # Mitte zuerst
-		if port_output_y: ports.append(port_output_y)   # dann unten
+		# 1 → Mitte
+		# 2 → Mitte + Unten
+		# 3 → Oben + Mitte + Unten
+		if flows_to.size() == 1:
+			if port_output_x: ports.append(port_output_x)
+		elif flows_to.size() == 2:
+			if port_output_x: ports.append(port_output_x)
+			if port_output_y: ports.append(port_output_y)
+		else:
+			if port_output_y_top: ports.append(port_output_y_top)
+			if port_output_x: ports.append(port_output_x)
+			if port_output_y: ports.append(port_output_y)
 		return ports
 
-	# ======================================================
-	# 3) Fallback (wenn mal ein exotisches Gateway kommt)
-	# ======================================================
+	# Fallback
 	if port_output_x: ports.append(port_output_x)
-	if port_output_y_top: ports.append(port_output_y_top)
 	if port_output_y: ports.append(port_output_y)
 	return ports
-
 
 
 func get_output_ports_sorted() -> Array:

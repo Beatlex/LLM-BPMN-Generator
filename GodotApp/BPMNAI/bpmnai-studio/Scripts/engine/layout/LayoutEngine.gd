@@ -58,13 +58,24 @@ func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 			var y = base_y
 
 			match count:
+
 				1:
 					y = base_y
+
 				2:
-					y = base_y + (LANE_SPACING_Y if i == 1 else 0)
+					if type == "exclusive_gateway" or type == "inclusive_gateway":
+						# XOR / OR → Mitte + Unten
+						y = base_y if i == 0 else base_y + LANE_SPACING_Y
+					else:
+						# AND → Oben + Unten
+						y = base_y + (-LANE_SPACING_Y / 2 if i == 0 else LANE_SPACING_Y / 2)
+
 				3:
+					# alle Gateways → Oben / Mitte / Unten
 					y = base_y + (i - 1) * LANE_SPACING_Y
+
 				_:
+					# >3 → symmetrisch erweitern
 					y = base_y + (i - mid) * LANE_SPACING_Y
 
 			child.global_position = Vector2(x, y)

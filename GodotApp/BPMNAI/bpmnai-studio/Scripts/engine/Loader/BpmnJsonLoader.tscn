@@ -8,7 +8,7 @@ script = ExtResource("1_4aju1")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="btnBackHome" type="Button" parent="UI"]
+[node name="btnBack" type="Button" parent="UI"]
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -19,8 +19,25 @@ offset_top = -31.0
 offset_right = 31.0
 grow_horizontal = 2
 grow_vertical = 0
+size_flags_vertical = 8
 accessibility_name = "Zurück"
 text = "Zurück"
+
+[node name="btnScreenshot" type="Button" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 43.0
+offset_top = -31.0
+offset_right = 138.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 8
+accessibility_name = "Zurück"
+text = "Screenshot
+"
 
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("2_it2fy")

@@ -2,3 +2,4 @@ Installer/OllamaSetup.exe
 GodotApp/BPMNAI/bpmnai-studio/Logs/ChatLogs/chat_2025-12-07T15-46-07.txt
 GodotApp/BPMNAI/bpmnai-studio/Logs/CreatedJson/bpmn_2025-12-14T11-04-58.json
 *.txt
+*.import

@@ -5,7 +5,8 @@ extends Node2D
 @onready var flow_handler = preload("res://Scripts/engine/flow/FlowConnectionHandler.gd").new()
 @onready var flow_scene   = preload("res://Assets/bpmn/nodes/FlowLine2D.tscn")
 
-@onready var btn_back: Button = $UI/btnBackHome
+@onready var btn_back: Button = $UI/btnBack
+@onready var btn_screenshot: Button = $UI/btnScreenshot
 @onready var cam: Camera2D = $Camera2D
 
 @onready var diagram_root: Node2D = self
@@ -21,22 +22,28 @@ func load_json_data(data: Array) -> void:
 func _ready() -> void:
 	if btn_back:
 		btn_back.pressed.connect(_back_to_home)
-	else:
-		push_error("[BpmnJsonLoader] btnBackHome nicht gefunden! Pfad prüfen.")
+
+	if btn_screenshot:
+		btn_screenshot.pressed.connect(_take_screenshot)
 
 	if cam:
 		cam.make_current()
-	else:
-		push_error("[Runner] Keine Camera2D gefunden!")
 
 	if not BPMNData.pending_bpmn.is_empty():
 		current_data = BPMNData.pending_bpmn
-		BPMNData.pending_bpmn = []  # leeren, damit kein Müll bleibt
+		BPMNData.pending_bpmn = []
 		_render_bpmn()
 
 func _back_to_home() -> void:
-	get_tree().change_scene_to_file("res://ui/home/Home.tscn")
-
+	match BPMNData.origin:
+		BPMNData.Origin.CHAT:
+			get_tree().change_scene_to_file(
+				"res://ui/chat/LlmChatWindow.tscn"
+			)
+		BPMNData.Origin.HOME:
+			get_tree().change_scene_to_file(
+				"res://ui/home/Home.tscn"
+			)
 func _render_bpmn() -> void:
 	if typeof(current_data) != TYPE_ARRAY or current_data.is_empty():
 		push_error("[Runner] JSON muss ARRAY sein!")
@@ -63,3 +70,22 @@ func _render_bpmn() -> void:
 		var n: Node2D = nodes[id]
 		print("Node:", id, " → ", n.element_type, " Pos:", n.global_position)
 	print("===================================\n")
+
+func _take_screenshot() -> void:
+	await get_tree().process_frame
+
+	var viewport := get_viewport().get_camera_2d().get_viewport()
+	var image: Image = viewport.get_texture().get_image()
+
+	if image == null:
+		push_error("[Screenshot] Konnte Viewport nicht erfassen")
+		return
+
+	var timestamp := Time.get_datetime_string_from_system().replace(":", "-")
+	var path := "res://Logs/BPMNPngs/bpmn_screenshot_%s.png" % timestamp
+
+	var err := image.save_png(path)
+	if err != OK:
+		push_error("[Screenshot] Fehler beim Speichern")
+	else:
+		print("[Screenshot] Gespeichert:", path)
