@@ -25,8 +25,7 @@ func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
 	var end   := _get_port_center(dst_port)
 
 	line.points = _compute_path(start, end, route_type, dst_port)
-	_update_arrow(line.points)
-
+	_update_arrow(line.points, dst_port)
 
 func _compute_path(
 	start: Vector2,
@@ -56,18 +55,24 @@ func _compute_path(
 	if route_type == 2:
 		return [start, Vector2(start.x, end.y), end]
 
-	# 3 = MERGE Top / Bottom → exakt horizontal auf Gateway-Kante
+	# 3 = MERGE Top / Bottom exakt auf Port-X sammeln, dann vertikal
 	if route_type == 3:
-		var entry := _get_gateway_edge_entry(dst_port, start)
+		var port_pos := end 
+
 		return [
 			start,
-			Vector2(entry.x, start.y),
-			entry
+			Vector2(port_pos.x, start.y), # horizontal bis exakt Port-X
+			port_pos                        # vertikal in den Port
+	]
+	
+	# 4 = MERGE Mitte 
+	if route_type == 4:
+		var epsilon := 1.0  # minimaler horizontaler Versatz
+		return [
+			start,
+			Vector2(end.x + epsilon, end.y)
 		]
 
-	# 4 = MERGE Mitte → direkt
-	if route_type == 4:
-		return [start, end]
 
 	# 0 = Default (Dogleg)
 	var mid_x := (start.x + end.x) * 0.5
@@ -79,18 +84,54 @@ func _compute_path(
 	]
 
 
-func _update_arrow(pts: PackedVector2Array):
-	if pts.size() < 2:
+func _update_arrow(pts: PackedVector2Array, dst_port: Node2D):
+	if pts.size() < 2 or dst_port == null:
 		return
 
-	var p1: Vector2 = pts[pts.size() - 2]
-	var p2: Vector2 = pts[pts.size() - 1]
-	var dir: Vector2 = (p2 - p1).normalized()
+	var end := pts[pts.size() - 1]
+	var arrow_pos := end
 
-	# Pfeil exakt auf letzter Achse platzieren
-	arrow.global_position = p2 - dir * ARROW_BACK_OFFSET
+	# ---- MERGE-GATEWAY-LOGIK ----
+	var gateway := dst_port.get_parent()
+	if gateway:
+		var center = gateway.global_position
+		var port_pos := dst_port.global_position
 
-	# Rotation strikt achsenbasiert (keine Diagonalen!)
+		var dx = port_pos.x - center.x
+		var dy = port_pos.y - center.y
+
+		# ---- MID (links → ins Gateway) ----
+		if abs(dx) > abs(dy):
+			arrow.rotation = 0.0               # →
+			arrow.global_position = Vector2(
+				port_pos.x - ARROW_BACK_OFFSET,
+				port_pos.y
+			)
+			return
+
+		# ---- TOP (oben → nach unten) ----
+		if dy < 0.0:
+			arrow.rotation = PI / 2            # ↓
+			arrow.global_position = Vector2(
+				port_pos.x,
+				port_pos.y - ARROW_BACK_OFFSET
+			)
+			return
+
+		# ---- BOTTOM (unten → nach oben) ----
+		if dy > 0.0:
+			arrow.rotation = -PI / 2           # ↑
+			arrow.global_position = Vector2(
+				port_pos.x,
+				port_pos.y + ARROW_BACK_OFFSET
+			)
+			return
+
+	# ---- FALLBACK (Tasks / Events) ----
+	var p1 := pts[pts.size() - 2]
+	var dir := (end - p1).normalized()
+	arrow.global_position = end - dir * ARROW_BACK_OFFSET
+
 	if abs(dir.x) > abs(dir.y):
 		arrow.rotation = 0.0 if dir.x > 0.0 else PI
 	else:
@@ -103,29 +144,3 @@ func _get_port_center(port: Node2D) -> Vector2:
 			if c is CollisionShape2D and c.shape:
 				return c.global_transform.origin
 	return port.global_position
-
-
-func _get_gateway_edge_entry(port: Node2D, from: Vector2) -> Vector2:
-	# Gateway ist 45° gedreht, Ports liegen in den Ecken.
-	# Ziel: Eintrittspunkt EXAKT auf der Gateway-KANTE
-
-	var gateway := port.get_parent()
-	var center: Vector2 = gateway.global_position
-
-	var dx := from.x - center.x
-	var dy := from.y - center.y
-
-	# Horizontaler Eintritt (links/rechts)
-	if abs(dx) > abs(dy):
-		var sign_x := -1 if dx > 0.0 else 1
-		return Vector2(
-			center.x + sign_x * abs(port.global_position.x - center.x),
-			center.y
-		)
-
-	# Vertikaler Eintritt (oben/unten)
-	var sign_y := -1 if dy > 0.0 else 1
-	return Vector2(
-		center.x,
-		center.y + sign_y * abs(port.global_position.y - center.y)
-	)
