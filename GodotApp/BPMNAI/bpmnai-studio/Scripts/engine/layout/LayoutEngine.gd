@@ -72,8 +72,18 @@ func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 					y = base_y + (i - 1) * LANE_SPACING_Y
 
 				_:
-					# >3 → symmetrisch erweitern
-					y = base_y + (i - mid) * LANE_SPACING_Y
+	# >= 4 Branches
+					if count % 2 == 0:
+						# GERADE Anzahl (4,6,8…)
+						# → KEINE Mitte, symmetrisch um base_y
+						# Index wird bewusst um 0.5 verschoben
+						var half := count / 2
+						var offset := (i - half) + 0.5
+						y = base_y + offset * LANE_SPACING_Y
+					else:
+						# UNGERADE Anzahl (5,7,9…)
+						# → EINE echte Mitte
+						y = base_y + (i - mid) * LANE_SPACING_Y
 
 			child.global_position = Vector2(x, y)
 			print("[LayoutEngine]   Child %s → (%s, %s)" %
