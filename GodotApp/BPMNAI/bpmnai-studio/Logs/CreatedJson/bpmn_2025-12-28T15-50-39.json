@@ -1,0 +1,52 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Bestellung prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "Versenden",
+		"element_type": "task",
+		"flows_to": [
+			"3"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	}
+]

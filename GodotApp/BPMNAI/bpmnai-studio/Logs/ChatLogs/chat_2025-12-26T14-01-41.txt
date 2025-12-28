@@ -1,0 +1,96 @@
+=== Chat Log (2025-12-26T14-01-41) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway" | "inclusive_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] vor das Gateways bitte noch Geschenk auspacken. bei entscheidung nehmen wir für outputs statt 2= Geschenk super und 3= Geschenk toll. element_id 2 wird dann zu höfflich lächeln und element id 3 zu freuen
+
+[assistant] We need to produce only questions. We must comply with rule: max 5 questions. We should ask them clarifying.Welchen Namen soll der Start Event haben?  
+Welchen Namen soll der End Event haben?  
+Gibt es noch weitere Tasks (außer Geschenk auspacken, höflich lächeln, freuen) im Prozess?  
+Möchten Sie Lanes oder Pools definieren und welche IDs bzw. Namen dafür?  
+Wie sollen die Flows von Geschenk auspacken zu den beiden Entscheidungen (höflich lächeln / freuen) aussehen?
+
+[user] End event kann von dir frei benannt werden. nein es gibt sonst keine weiteren tasks. nein keine lanes und pools. vom gateway muss einmal zu höfflich lächeln laufen und einmal zu freuen. für output right und down nehmen wir die wörter wie beschrieben.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Start",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Geschenk auspacken",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "2",
+    "element_name": "",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["3","4"],
+    "outputs": { "right": "Geschenk super", "down": "Geschenk toll" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "3",
+    "element_name": "höflich lächeln",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "4",
+    "element_name": "freuen",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "5",
+    "element_name": "End",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  }
+]
+

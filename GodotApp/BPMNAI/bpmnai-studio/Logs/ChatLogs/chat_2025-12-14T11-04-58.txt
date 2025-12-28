@@ -1,0 +1,88 @@
+=== Chat Log (2025-12-14T11-04-58) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ein Kunde bestellt ein Produkt. Danach wird die Bestellung geprüft. Wenn sie genehmigt wird, wird das Produkt versendet, ansonsten wird die Bestellung abgelehnt.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Order Received",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Check Order",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Order Approved?",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["3","4"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Send Product",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Reject Order",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Order Completed",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+

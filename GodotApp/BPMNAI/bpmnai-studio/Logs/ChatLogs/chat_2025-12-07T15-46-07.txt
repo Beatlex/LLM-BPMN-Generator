@@ -1,0 +1,33 @@
+=== Chat Log (2025-12-07T15-46-07) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Erstelle mir einen einfachen Testprozess mit 2 Tasks und einem Gateway. Der inhalt ist egal dies ist nur ein funktionstest
+
+[assistant] We must produce only a question as answer.Welchen Typ soll das Gateway haben (exclusive, parallel, inclusive)? Und sollen beide Tasks in derselben Lane liegen oder unterschiedliche Lanes benötigen?
+

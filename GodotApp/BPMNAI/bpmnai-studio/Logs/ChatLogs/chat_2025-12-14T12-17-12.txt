@@ -1,0 +1,53 @@
+=== Chat Log (2025-12-14T12-17-12) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ich will einen Beispielhaften BPMN Prozess zum Burger braten erstellen. Der Prozess soll optimiert sein und der Burger soll in 3 parallen schritten vorbereitet werden.
+
+[assistant] Welchen Namen soll der Start‑Event haben?  
+
+Welche drei Aufgaben sollen parallel ausgeführt werden (z. B. Patty braten, Brötchen toasten, Toppings anrichten)?  
+
+Welche Aufgabe soll nach dem Zusammenführen der drei Pfade ausgeführt werden (z. B. Burger zusammenbauen, servieren)?  
+
+Gibt es bestimmte Lanes oder Pools, in denen die Aufgaben platziert werden sollen, oder soll alles in einer einzigen Lane/Pools liegen?  
+
+Möchten Sie für die Flows spezifische Positionen im Diagramm (z. B. "right", "down") angeben, oder reicht ein leeres Feld?
+
+[user] Burger event startet soll der Name des Start events sein.
+
+[assistant] We should ask: what are the names of the three parallel tasks? What is the name of the final task? Do they want lane id? Also flows_to indices.
+
+Let's ask.Wie sollen die drei parallelen Aufgaben heißen (z. B. "Patty braten", "Brötchen toasten", "Toppings anrichten")?  
+
+Welchen Namen soll die Aufgabe haben, die nach dem Zusammenführen der drei Pfade ausgeführt wird (z. B. "Burger zusammenbauen und servieren")?  
+
+Sollen alle Aufgaben in einer einzigen Lane/Pools liegen, und wenn ja, wie soll diese Lane/Pools identifiziert werden?  
+
+Möchten Sie für die Flows bestimmte Positionen (z. B. "right", "down") festlegen, oder reicht ein leeres Feld?
+

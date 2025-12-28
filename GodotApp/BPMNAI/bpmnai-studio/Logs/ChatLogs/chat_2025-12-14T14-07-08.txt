@@ -1,0 +1,128 @@
+=== Chat Log (2025-12-14T14-07-08) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ich möchte einen BPMN 2.0 Prozess erstellen welches den Bestellprozesse einer Online Essensbestellung bei einem Viatnamesischen Restaurant darstellt. Was sagst du welche Tasks entscheidungen und Gateways sind nötig?
+
+[assistant] Welchen Ablauf möchtest du genau abbilden?
+
+1. Gibt es einen separaten Schritt „Menü auswählen“ vor dem Hinzufügen der Artikel zum Warenkorb?  
+2. Welche Zahlungsoptionen (z. B. Kreditkarte, PayPal, Nachnahme) sollen berücksichtigt werden?  
+3. Müssen wir vor der Bestellbestätigung die Verfügbarkeit (Inventar) prüfen?  
+4. Gibt es einen Schritt, in dem ein Zusteller oder Fahrer zugewiesen wird?  
+5. Soll nach der Bestellung automatisch eine Bestätigungs‑E‑Mail oder SMS versendet werden?
+
+[user] nein die artikel sind kategorisch sortiert und derUser soll einfach die gewünschten artikel hinzufügen.
+
+[assistant] We need to ask up to 5 questions. We'll ask 4 more. Let's keep concise.Welche Zahlungsoptionen sollen zur Verfügung stehen?  
+
+Soll die Verfügbarkeit der Artikel im Lager vor der Bestellung geprüft werden?  
+
+Wie erfolgt die Zuordnung eines Lieferfahrers oder Zustellers?  
+
+Muss nach Abschluss der Bestellung automatisch eine Bestätigungs‑E‑Mail oder SMS versendet werden?  
+
+Gibt es einen Prozessschritt für Stornierungen oder Rückerstattungen?
+
+[user] Zahlungsoptionen nur paypal. Die verfügbarkeit soll geprüft werden vor abschluss der Bestellung. ist das produkt verfügbar alles gut. ist es nicht vorhanden soll es einfach aus dem Warenkorb entfernt werden. ja nach bestellung soll eine Mail verschickt werden.
+
+[assistant] [
+  {
+    "element_id":"0",
+    "element_name":"Start",
+    "element_type":"start_event",
+    "flows_to":["1"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"1",
+    "element_name":"Artikel auswählen und in Warenkorb legen",
+    "element_type":"task",
+    "flows_to":["2"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"2",
+    "element_name":"Verfügbarkeit prüfen",
+    "element_type":"task",
+    "flows_to":["3"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"3",
+    "element_name":"Verfügbarkeit Entscheidung",
+    "element_type":"exclusive_gateway",
+    "flows_to":["4","5"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"4",
+    "element_name":"Unverfügbares Produkt entfernen",
+    "element_type":"task",
+    "flows_to":["1"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"5",
+    "element_name":"Mit PayPal bezahlen",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"6",
+    "element_name":"Bestätigungs‑E‑Mail versenden",
+    "element_type":"task",
+    "flows_to":["7"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"7",
+    "element_name":"Ende",
+    "element_type":"end_event",
+    "flows_to":[],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  }
+]
+
