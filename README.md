@@ -96,18 +96,30 @@ Dieses Projekt befindet sich aktuell im **Early-Preview-Stadium**. Schnittstelle
 
 ---
 
-Beispiele
+## Beispiele
 
-Die folgenden Beispiele zeigen exemplarisch, wie der BPMN-AI Renderer natürliche Sprache in strukturierte BPMN-Modelle überführt.
+Die folgenden Beispiele zeigen exemplarisch, wie der **BPMN-AI Renderer** natürliche Sprache in **strukturierte und validierte BPMN-Modelle** überführt.
 
-Beispiel 1: Einfacher linearer Prozess
-Natürliche Sprache (Eingabe)
+Jedes Beispiel besteht aus:
+1. einer natürlichen Spracheingabe,
+2. dem vom LLM erzeugten BPMN-JSON,
+3. sowie dem automatisch gerenderten BPMN-Diagramm.
 
-Der Prozess beginnt mit einer Bestellung.
-Danach wird die Bestellung geprüft.
-Anschließend wird sie versendet und der Prozess endet.
+---
 
-Erzeugtes BPMN-JSON
+### Beispiel 1: Einfacher linearer Prozess
+
+#### Natürliche Sprache (Eingabe)
+
+> Der Prozess beginnt mit einer Bestellung.  
+> Danach wird die Bestellung geprüft.  
+> Anschließend wird sie versendet und der Prozess endet.
+
+---
+
+#### Erzeugtes BPMN-JSON
+
+```json
 [
   {
     "element_id": "0",
