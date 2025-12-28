@@ -252,3 +252,121 @@ Jedes Beispiel besteht aus:
 
 <img width="1600" height="900" alt="bpmn_screenshot_2025-12-28T16-16-34" src="https://github.com/user-attachments/assets/a280accf-0390-453d-9c11-0d6e80e2283a" />
 
+### Beispiel 3: Paralleler Prozess
+
+#### Natürliche Sprache (Eingabe)
+
+>Nach Eingang einer Pizzabestellung 
+>werden gleichzeitig der Teig vorbereitet, die Zutaten geschnitten und der Ofen vorgeheizt.
+>Sobald alle Schritte abgeschlossen sind, wird die Pizza gebacken und der Prozess endet.
+
+---
+
+#### Erzeugtes BPMN-JSON
+
+```json
+[
+  {
+    "element_id": "0",
+    "element_name": "Order Received",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Parallel Split",
+    "element_type": "parallel_gateway",
+    "flows_to": ["2", "3", "4"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Prepare Dough",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Cut Ingredients",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Preheat Oven",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Parallel Merge",
+    "element_type": "parallel_gateway",
+    "flows_to": ["6"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Bake Pizza",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "7",
+    "element_name": "End",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+```
+
+#### Gerendertes BPMN-Diagramm
+
+
+<img width="1600" height="900" alt="bpmn_screenshot_2025-12-28T16-22-15" src="https://github.com/user-attachments/assets/dca9537b-2e18-4bf8-bf0e-29d0061301c8" />
+
