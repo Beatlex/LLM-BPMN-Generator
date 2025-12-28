@@ -1,0 +1,83 @@
+=== Chat Log (2025-12-16T14-43-28) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] ich möchte einen einfaches BPMN erstellen welches nur 2 Tasks in einem ablauf hat sowie ein start und endevent.
+
+[assistant] We can ask a single question: "Wie sollen die beiden Tasks heißen und in welcher Reihenfolge?" Then produce JSON.Wie heißen die beiden Tasks und in welcher Reihenfolge sollen sie ausgeführt werden?
+
+[user] Start evetn Hunger kommt auf Task 1 Kühlschrank öffnen  Task 2 Essen herausnehmen Task 3 Essen konsumieren Endevent Hunger gestillt
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Start event Hunger kommt",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Kühlschrank öffnen",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Essen herausnehmen",
+    "element_type": "task",
+    "flows_to": ["3"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Essen konsumieren",
+    "element_type": "task",
+    "flows_to": ["4"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Endevent Hunger gestillt",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id":"",
+    "pool_id":""
+  }
+]
+

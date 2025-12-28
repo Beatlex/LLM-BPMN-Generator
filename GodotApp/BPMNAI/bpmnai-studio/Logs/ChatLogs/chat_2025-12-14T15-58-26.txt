@@ -1,0 +1,40 @@
+=== Chat Log (2025-12-14T15-58-26) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] ich möchte einen einfachen BPMN Modell erstellen. Es soll ein einfaches Ausbringen von Saat des bauerns darstellen. Ein UND Gateways und bis zu 5 Tasks enthalten. Entscheide Selbstständig und unterstüzte
+
+[assistant] [{"element_id":"0","element_name":"Start","element_type":"start_event","flows_to":["1"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"1","element_name":"Boden vorbereiten","element_type":"task","flows_to":["2"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"2","element_name":"Saatgut auswählen","element_type":"task","flows_to":["3"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"3","element_name":"Saatgut aussäen","element_type":"task","flows_to":["4"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"4","element_name":"Parallel Gateway","element_type":"parallel_gateway","flows_to":["5","6"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"5","element_name":"Bewässern","element_type":"task","flows_to":["7"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"6","element_name":"Düngen","element_type":"task","flows_to":["7"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"7","element_name":"Parallel Gateway Join","element_type":"parallel_gateway","flows_to":["8"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"8","element_name":"End","element_type":"end_event","flows_to":[],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"}]
+
+[system] Das BPMN-JSON ist formal ungültig:
+- Parallel-Gateway 4 ist weder gültiger AND-Split noch AND-Join.
+
+Korrigiere das JSON. Gib ausschließlich das korrigierte BPMN-JSON aus. Keine Erklärungen, kein Text.
+
+[assistant] [{"element_id":"0","element_name":"Start","element_type":"start_event","flows_to":["1"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"1","element_name":"Boden vorbereiten","element_type":"task","flows_to":["2"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"2","element_name":"Saatgut auswählen","element_type":"task","flows_to":["3"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"3","element_name":"Saatgut aussäen","element_type":"task","flows_to":["4"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"4","element_name":"Parallel Gateway","element_type":"parallel_gateway","flows_to":["5","6"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"5","element_name":"Bewässern","element_type":"task","flows_to":["7"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"6","element_name":"Düngen","element_type":"task","flows_to":["7"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"7","element_name":"Parallel Gateway Join","element_type":"parallel_gateway","flows_to":["8"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"},{"element_id":"8","element_name":"End","element_type":"end_event","flows_to":[],"outputs":{"right":"","down":""},"lane_id":"","pool_id":"1"}]
+

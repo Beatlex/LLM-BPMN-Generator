@@ -1,0 +1,37 @@
+=== Chat Log (2025-12-14T11-53-22) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ich will einen Beispielhaften BPMN Prozess zum Burger braten erstellen. Der Prozess soll optimiert sein und der Burger soll in 3 parallen schritten vorbereitet werden.
+
+[assistant] We need to ask up to 5 questions. We'll do 5.1. Welche drei parallelen Schritte sollen im Prozess für die Burgerzubereitung durchgeführt werden?  
+2. Welche konkreten Aufgaben (Tasks) gehören zu jedem dieser parallelen Schritte?  
+3. Gibt es Entscheidungspunkte (Gateways) im Ablauf, z. B. ob ein Burger extra gebraten werden soll?  
+4. Möchtest du die Aufgaben in Lanes unterteilen (z. B. „Zubereitung“, „Grillen“, „Zusammenstellung“)?  
+5. Sollen zusätzliche Ressourcen wie Grill, Pfanne oder Servierwagen im Prozess berücksichtigt werden?
+

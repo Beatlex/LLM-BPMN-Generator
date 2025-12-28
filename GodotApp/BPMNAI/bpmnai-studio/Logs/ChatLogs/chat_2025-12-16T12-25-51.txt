@@ -1,0 +1,116 @@
+=== Chat Log (2025-12-16T12-25-51) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] auf einem Bauernhof gibt es unteschiedliche Tiere. Diese müssen unterschiedlich gefüttert werden. Kühe bekommen nur Heu und Pferde bekommen Möhren und Weizen.
+
+[assistant] We need to produce the dialogue, not the JSON yet. We are at step 1. We should ask first question: "Gibt es noch weitere Tiere, die gefüttert werden müssen?" Then second: "Wie oft soll der Fütterungsprozess pro Tag durchgeführt werden?" Third: "Möchten Sie separate Lanes für Kühe und Pferde?" Fourth: "Soll der Prozess mit einem Endevent abgeschlossen werden?" Fifth: "Welche Pool soll verwendet werden, wenn Sie mehrere Pools haben?" But maybe 5 is enough.
+
+We'll ask the questions sequentially.Gibt es noch weitere Tiere, die auf dem Bauernhof gefüttert werden müssen?
+
+[user] Ja der Prozess soll in einem Endevent abgeschlossen werden. Pools und lanes kannst du nach sinnigkeit vergeben. Nein bis auf Pferde und Kühe muss nichts anderes gefüttert werden.
+
+[assistant] Das Modell hat keine verwertbare Antwort zurückgegeben.
+
+[user] der Bauer muss entscheiden muss er entwerder Heu oder Karotten holen. Holt er karrotten muss er zusätzlich Weizen holen. beide stränge enden dann im Task Tier füttern und endet dann.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Start",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "1",
+    "element_name": "Entscheidung: Heu oder Karotten",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["2", "4"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "2",
+    "element_name": "Heu holen",
+    "element_type": "task",
+    "flows_to": ["3"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "Kühe",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "3",
+    "element_name": "Tier füttern (Kühe)",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "Kühe",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "4",
+    "element_name": "Karotten holen",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "Pferde",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "5",
+    "element_name": "Weizen holen",
+    "element_type": "task",
+    "flows_to": ["6"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "Pferde",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "6",
+    "element_name": "Tier füttern (Pferde)",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "Pferde",
+    "pool_id": "Bauernhof"
+  },
+  {
+    "element_id": "7",
+    "element_name": "Ende",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": "Bauernhof"
+  }
+]
+

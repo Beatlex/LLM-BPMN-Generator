@@ -1,0 +1,43 @@
+=== Chat Log (2025-12-17T15-45-30) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ich möchte einen Prozess modelieren zur prüfung eines Antrages.
+
+[assistant] Welche Person oder welches System startet den Prozess?
+
+[user] Der Prozesse wird mitt eingang des Antrages gestartet. Danach wird eine Entscheidung getroffen. Ist der Antrag Korrekt oder Falsch.
+
+[assistant] We should ask: 1) If Antrag korrekt, what happens? 2) If Antrag falsch, what happens? 3) Are there any tasks before or after decision? Maybe assign to a reviewer? For minimal model: start event -> exclusive gateway -> two branches: "korrekt" leads to task "approve" -> end. "falsch" leads to task "reject" -> end. Or could be end directly. Let's ask: 1) Was there an approval task for correct? 2) Was there a rejection note? 3) Are there lanes? Let's ask.Welche Aktion erfolgt, wenn der Antrag korrekt ist?  
+Welche Aktion erfolgt, wenn der Antrag falsch ist?  
+Wird der Prozess in einem Lane- oder Pool-System modelliert, oder reicht eine einzige Lane?
+
+[user] ist der Antrag erfolgreich wird er statt gegeben. Anderfalls abgelehnt. Danach soll der Prozess enden.
+
+[assistant] [{"element_id":"0","element_name":"Start","element_type":"start_event","flows_to":["1"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":""},{"element_id":"1","element_name":"Entscheidung","element_type":"exclusive_gateway","flows_to":["2","3"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":""},{"element_id":"2","element_name":"Antrag erfolgreich","element_type":"task","flows_to":["4"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":""},{"element_id":"3","element_name":"Antrag abgelehnt","element_type":"task","flows_to":["5"],"outputs":{"right":"","down":""},"lane_id":"","pool_id":""},{"element_id":"4","element_name":"Ende Erfolgreich","element_type":"end_event","flows_to":[],"outputs":{"right":"","down":""},"lane_id":"","pool_id":""},{"element_id":"5","element_name":"Ende Abgelehnt","element_type":"end_event","flows_to":[],"outputs":{"right":"","down":""},"lane_id":"","pool_id":""}]
+

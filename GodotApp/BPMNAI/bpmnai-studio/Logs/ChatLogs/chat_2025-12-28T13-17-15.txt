@@ -1,0 +1,308 @@
+=== Chat Log (2025-12-28T13-17-15) ===
+
+[system] Du agierst als hochpräziser BPMN-Prozessmodellierer und JSON-Generator mit tiefem Fachwissen in BPMN 2.0
+
+ZIEL:
+Erhebe gemeinsam mit dem Nutzer einen fachlich korrekten Geschäftsprozess und generiere ausschließlich ein valides, semantisch konsistentes BPMN-JSON,
+das direkt durch einen BPMN-Renderer verarbeitet werden kann.
+Der Dialog dient ausschließlich der erzeugung des Modells und endet spätestens nach 7 deiner Antworten.
+
+Rolle(Role Prompting):
+-Du denkst prozesslogisch, nicht narrativ.
+-Du modellierst nur explizit genannte Schritte.
+-Du trennst strikt zwischen:
+->Aktivitäten (Tasks)
+->Entscheidungen (Gateways)
+->Parallelität
+->Prozessstart und -ende
+Du vermeidest implizite Annahmen.
+
+Knowledge Injection
+-Jeder Prozess hat genau ein Start-Event.
+-End-Events dürfen mehrfach vorkommen.
+-Exclusive Gateways:
+->benötigen beschriftete Ausgänge (outputs.right, outputs.down)
+-Parallel Gateways:
+->treten immer als Split + Merge-Paar auf
+->Anzahl eingehender = Anzahl ausgehender Flows
+-Tasks dürfen nie direkt mehrere ausgehende Flows haben.
+-Gateways dürfen keine fachlichen Tätigkeiten enthalten.
+-Sequenzflüsse müssen gerichtet und logisch konsistent sein.
+
+Standardisierung
+Intern arbeitest du immer mit folgendem Modell:
+1. Prozessliste erfassen
+2. Sequenzielle Reihenfolge bestimmen
+3. Entscheidungen & Parallelität explizit prüfen
+4. BPMN-Elemente ableiten
+5. IDs vergeben
+6. JSON validieren
+
+DIALOG- UND REFINEMENT-STRATEGIE
+-Stelle nur gezielte Rückfragen, wenn mindestens eine dieser Informationen fehlt:
+-Gibt es Entscheidungen mit Alternativen?
+-Gibt es parallele Aktivitäten?
+-Gibt es mehrere mögliche Enden?
+-Ist die Reihenfolge eindeutig?
+
+Maximal 5 deiner Antworten dürfen Fragen enthalten.
+Nutze jede Frage zur gezielten Modellverbesserung, nicht zur allgemeinen Klärung.
+Nur das finale JSON wird ausgegeben.
+
+AUSGABEFORMAT (verpflichtend!)
+Die Ausgabe besteht ausschließlich aus einem JSON-Array im folgenden Schema:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "inclusive_gateway" | "parallel_gateway", 
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+-IDs sind numerisch, eindeutig und strikt fortlaufend
+-Jeder flows_to-Verweis zeigt auf eine existierende ID
+-Start-Event hat keine eingehenden Flows
+-End-Events haben keine ausgehenden Flows
+-Gateways haben mindestens zwei ausgehende Flows
+-JSON ist syntaktisch valide
+
+NEGATIVE PROMPTING
+-Kein Text außerhalb des JSON
+-Keine Erklärungen
+-Kein Markdown
+-Keine Codeblöcke
+-Keine Kommentare
+-Keine Annahmen
+-Keine BPMN-Elemente außerhalb des Schemas
+
+[user] Ich möchte einen Prozess erstellen welche das Automatisierte verpacken eines Packetes abbildet. Der Auftrag kommt in das System, dadurch wissen wir wie groß der Karton sein muss, gleichzeitig werden labels gedruckt und das packet zur verpackungsstation gesendet. Dies passiert alles gleichzeitig. danach verpackt der arbeiter das packet. danach wird geprüft ist das Packet Gut oder Schlecht. Ist es Gut wird das packet versendet ist es schlecht wird der prozess beendet.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Start",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Split Parallel",
+    "element_type": "parallel_gateway",
+    "flows_to": ["2","3","4"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Determine Carton Size",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Print Labels",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Send to Packaging Station",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Merge Parallel",
+    "element_type": "parallel_gateway",
+    "flows_to": ["6"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Worker Packs Packet",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "7",
+    "element_name": "Inspection Result",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["8","10"],
+    "outputs": {
+      "right": "8",
+      "down": "10"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "8",
+    "element_name": "Send Packet",
+    "element_type": "task",
+    "flows_to": ["9"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "9",
+    "element_name": "End – Packet Sent",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "10",
+    "element_name": "End – Packet Bad",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+
+[system] Das BPMN-JSON ist formal ungültig:
+- Parallel-Gateway 1 ist weder gültiger AND-Split noch AND-Join.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+
+Korrigiere das JSON. Gib ausschließlich das korrigierte BPMN-JSON aus. Keine Erklärungen, kein Text.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Start",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Split Parallel",
+    "element_type": "parallel_gateway",
+    "flows_to": ["2","3","4"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Determine Carton Size",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Print Labels",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Send to Packaging Station",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Merge Parallel",
+    "element_type": "parallel_gateway",
+    "flows_to": ["6"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Worker Packs Packet",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "7",
+    "element_name": "Inspection Result",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["8","10"],
+    "outputs": {
+      "right": "8",
+      "down": "10"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "8",
+    "element_name": "Send Packet",
+    "element_type": "task",
+    "flows_to": ["9"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "9",
+    "element_name": "End – Packet Sent",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "10",
+    "element_name": "End – Packet Bad",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+

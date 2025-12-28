@@ -1,0 +1,33 @@
+=== Chat Log (2025-12-07T15-54-59) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Ich möchte gerne ein Prozess darstellen. wir starten mit dem zustand das ich durst bekommen. danach gehe ich in die Küche, dort entscheide ich ob ich einen kaffee oder einen Tee möchte. Je nachdem koche ich wasser oder lasse mir einen Kaffee an der maschine raus. beides endet damit das ich meinen durst stille.
+
+[assistant] Möchten Sie den Prozess in einem Pool mit Lanes unterteilen? Falls ja, welche Lane‑IDs und Pool‑ID sollen verwendet werden?
+

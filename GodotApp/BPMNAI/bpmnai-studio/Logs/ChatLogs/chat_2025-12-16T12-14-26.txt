@@ -1,0 +1,257 @@
+=== Chat Log (2025-12-16T12-14-26) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] ich will für mein Burgerevent ein BPMN Modell erstellen das der Burger brater Koch genau weis wie dieser Abläuft.
+
+[assistant] We need to produce first question.Welche konkreten Tätigkeiten soll der Koch beim Burger-Backen ausführen?
+
+[user] Als erstes sollte der Arbeitsplatz vorbereitet werden. danach sollten 3 schritte gleichzeitig stattfinden. Salat vorbereiten, Burgerbrötchen vorbereiten und Teller anwärmen. Danach muss eine entscheidung getroffen werden.
+
+[assistant] What decision? What happens after? Do we need parallel? We need lane etc? Probably minimal.Welche Entscheidung trifft der Koch und welche Pfade folgen jeweils daraus?
+
+[user] nachdem diese 3 arbeitsschritte gleichzeitig stattfinden muss nun der Koch entscheiden ob der Burger Vegitarisch oder mit Fleisch sein soll. Dementsprechend muss er entweder einen Fleischpatty oder eine Vegitarischen pattie braten. nach dieser entscheidung ob vegitarisch oder Fleisch soll der Burger danach angerichtet werden.
+
+[assistant] [
+  {
+    "element_id":"0",
+    "element_name":"Start",
+    "element_type":"start_event",
+    "flows_to":["1"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"1",
+    "element_name":"Arbeitsplatz vorbereiten",
+    "element_type":"task",
+    "flows_to":["2"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"2",
+    "element_name":"Parallel Gateway",
+    "element_type":"parallel_gateway",
+    "flows_to":["3","4","5"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"3",
+    "element_name":"Salat vorbereiten",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"4",
+    "element_name":"Burgerbrötchen vorbereiten",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"5",
+    "element_name":"Teller anwärmen",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"6",
+    "element_name":"Entscheidung: Veg oder Fleisch",
+    "element_type":"exclusive_gateway",
+    "flows_to":["7","8"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"7",
+    "element_name":"Fleischpatty braten",
+    "element_type":"task",
+    "flows_to":["9"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"8",
+    "element_name":"Vegpatty braten",
+    "element_type":"task",
+    "flows_to":["9"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"9",
+    "element_name":"Burger anrichten",
+    "element_type":"task",
+    "flows_to":["10"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"10",
+    "element_name":"End",
+    "element_type":"end_event",
+    "flows_to":[],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  }
+]
+
+[system] Das BPMN-JSON ist formal ungültig:
+- Parallel-Gateway 2 ist weder gültiger AND-Split noch AND-Join.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+
+Korrigiere das JSON. Gib ausschließlich das korrigierte BPMN-JSON aus. Keine Erklärungen, kein Text.
+
+[assistant] [
+  {
+    "element_id":"0",
+    "element_name":"Start",
+    "element_type":"start_event",
+    "flows_to":["1"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"1",
+    "element_name":"Arbeitsplatz vorbereiten",
+    "element_type":"task",
+    "flows_to":["2"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"2",
+    "element_name":"Parallel Gateway",
+    "element_type":"parallel_gateway",
+    "flows_to":["3","4","5"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"3",
+    "element_name":"Salat vorbereiten",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"4",
+    "element_name":"Burgerbrötchen vorbereiten",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"5",
+    "element_name":"Teller anwärmen",
+    "element_type":"task",
+    "flows_to":["6"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"6",
+    "element_name":"Entscheidung: Veg oder Fleisch",
+    "element_type":"exclusive_gateway",
+    "flows_to":["7","8"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"7",
+    "element_name":"Fleischpatty braten",
+    "element_type":"task",
+    "flows_to":["9"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"8",
+    "element_name":"Vegpatty braten",
+    "element_type":"task",
+    "flows_to":["9"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"9",
+    "element_name":"Burger anrichten",
+    "element_type":"task",
+    "flows_to":["10"],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  },
+  {
+    "element_id":"10",
+    "element_name":"End",
+    "element_type":"end_event",
+    "flows_to":[],
+    "outputs":{"right":"","down":""},
+    "lane_id":"",
+    "pool_id":""
+  }
+]
+

@@ -1,0 +1,157 @@
+=== Chat Log (2025-12-28T16-07-41) ===
+
+[system] Du agierst als hochpräziser BPMN-Prozessmodellierer und JSON-Generator mit tiefem Fachwissen in BPMN 2.0
+
+ZIEL:
+Erhebe gemeinsam mit dem Nutzer einen fachlich korrekten Geschäftsprozess und generiere ausschließlich ein valides, semantisch konsistentes BPMN-JSON,
+das direkt durch einen BPMN-Renderer verarbeitet werden kann.
+Der Dialog dient ausschließlich der erzeugung des Modells und endet spätestens nach 7 deiner Antworten.
+
+Rolle(Role Prompting):
+-Du denkst prozesslogisch, nicht narrativ.
+-Du modellierst nur explizit genannte Schritte.
+-Du trennst strikt zwischen:
+->Aktivitäten (Tasks)
+->Entscheidungen (Gateways)
+->Parallelität
+->Prozessstart und -ende
+Du vermeidest implizite Annahmen.
+
+Knowledge Injection
+-Jeder Prozess hat genau ein Start-Event.
+-End-Events dürfen mehrfach vorkommen.
+-Exclusive Gateways:
+->benötigen beschriftete Ausgänge (outputs.right, outputs.down)
+-Parallel Gateways:
+->treten immer als Split + Merge-Paar auf
+->Anzahl eingehender = Anzahl ausgehender Flows
+-Tasks dürfen nie direkt mehrere ausgehende Flows haben.
+-Gateways dürfen keine fachlichen Tätigkeiten enthalten.
+-Sequenzflüsse müssen gerichtet und logisch konsistent sein.
+
+Standardisierung
+Intern arbeitest du immer mit folgendem Modell:
+1. Prozessliste erfassen
+2. Sequenzielle Reihenfolge bestimmen
+3. Entscheidungen & Parallelität explizit prüfen
+4. BPMN-Elemente ableiten
+5. IDs vergeben
+6. JSON validieren
+
+DIALOG- UND REFINEMENT-STRATEGIE
+-Stelle nur gezielte Rückfragen, wenn mindestens eine dieser Informationen fehlt:
+-Gibt es Entscheidungen mit Alternativen?
+-Gibt es parallele Aktivitäten?
+-Gibt es mehrere mögliche Enden?
+-Ist die Reihenfolge eindeutig?
+
+Maximal 5 deiner Antworten dürfen Fragen enthalten.
+Nutze jede Frage zur gezielten Modellverbesserung, nicht zur allgemeinen Klärung.
+Nur das finale JSON wird ausgegeben.
+
+AUSGABEFORMAT (verpflichtend!)
+Die Ausgabe besteht ausschließlich aus einem JSON-Array im folgenden Schema:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "inclusive_gateway" | "parallel_gateway", 
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+-IDs sind numerisch, eindeutig und strikt fortlaufend
+-Jeder flows_to-Verweis zeigt auf eine existierende ID
+-Start-Event hat keine eingehenden Flows
+-End-Events haben keine ausgehenden Flows
+-Gateways haben mindestens zwei ausgehende Flows
+-JSON ist syntaktisch valide
+
+RÜCKFRAGEN-REGELN (verpflichtend):
+- Wenn Informationen fehlen, stelle gezielte Rückfragen.
+- Gib Rückfragen ausschließlich als normalen Klartext aus.
+- Nummeriere Rückfragen mit "1., 2., 3."
+- Gib keine Meta-Erklärungen oder internen Überlegungen aus.
+- Verwende ausschließlich Deutsch.
+- Gib niemals JSON oder strukturierte Daten für Rückfragen aus.
+
+NEGATIVE PROMPTING
+-Kein Text außerhalb des JSON
+-Keine Erklärungen
+-Kein Markdown
+-Keine Codeblöcke
+-Keine Kommentare
+-Keine Annahmen
+-Keine BPMN-Elemente außerhalb des Schemas
+- Gib keine internen Überlegungen, Planungen oder Begründungen aus.
+- Schreibe niemals Sätze wie "We should...", "I will...", "Let's...".
+
+[user] bitte tausche die entscheidungs flows von Damaged und ubeschädigt aus (right = unbeschädigt down= damaged) Ansonsten ist es fast perfekt.
+
+[assistant] We must follow the rule: we can ask up to 5 questions. We need the ID of the gateway. Also we need the entire process to output final JSON. The user says "fast perfekt", so likely they already have all elements. So we ask the missing info: ID of exclusive gateway. That is enough to swap flows.
+
+Thus respond with question.1. Welche ID hat das Exclusive Gateway, dessen Flows Sie tauschen möchten?
+
+[user] Nach dem Verpacken eines Pakets wird geprüft, ob das Paket beschädigt ist.Ist es unbeschädigt, wird das Paket versendet und der Prozess endet. Ist es beschädigt, wird der Prozess beendet.
+
+[assistant] [
+  {
+	"element_id": "0",
+	"element_name": "Start",
+	"element_type": "start_event",
+	"flows_to": ["1"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  },
+  {
+	"element_id": "1",
+	"element_name": "Pack Paket",
+	"element_type": "task",
+	"flows_to": ["2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  },
+  {
+	"element_id": "2",
+	"element_name": "Check beschädigt?",
+	"element_type": "exclusive_gateway",
+	"flows_to": ["3","5"],
+	"outputs": { "right": "3", "down": "5" },
+	"lane_id":"",
+	"pool_id":""
+  },
+  {
+	"element_id": "3",
+	"element_name": "Versenden",
+	"element_type": "task",
+	"flows_to": ["4"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  },
+  {
+	"element_id": "4",
+	"element_name": "Ende (Paket versendet)",
+	"element_type": "end_event",
+	"flows_to": [],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  },
+  {
+	"element_id": "5",
+	"element_name": "Ende (Paket beschädigt)",
+	"element_type": "end_event",
+	"flows_to": [],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+

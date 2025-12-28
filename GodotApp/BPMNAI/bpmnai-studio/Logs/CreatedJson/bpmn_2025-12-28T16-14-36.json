@@ -1,0 +1,91 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "Start des Verpackungsprozesses",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Paket verpacken",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "Paket prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"3"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Beschädigt?",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"4",
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "beschädigt",
+			"right": "unbeschädigt"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Paket senden",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Prozess beendet (unbeschädigt)",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "Prozess beendet (beschädigt)",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	}
+]
