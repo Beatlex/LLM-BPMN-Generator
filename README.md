@@ -168,9 +168,10 @@ Jedes Beispiel besteht aus:
 
 #### Natürliche Sprache (Eingabe)
 
-> Nach dem Verpacken eines Pakets wird geprüft, ob das Paket beschädigt ist. 
-> Ja es ist unbeschädigt,  das Paket wird versendet und der Prozess endet. 
-> Nein es ist beschädigt, wird der Prozess beendet.
+>Nach dem Verpacken eines Pakets wird geprüft, ob das Paket beschädigt ist. 
+>Ja es ist unbeschädigt,  das Paket wird versendet und der Prozess endet. 
+>Nein es ist beschädigt, wird der Prozess beendet. 
+>Start und Endvents sollten Passende Namen besitzen. Bitte entscheide dies Selbstständig.
 
 ---
 
