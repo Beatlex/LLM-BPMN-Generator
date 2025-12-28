@@ -5,11 +5,13 @@ extends Control
 @onready var send_button  = $"MarginContainer/MainContainer/ChatPanel/Input/Send"
 @onready var btn_render   = $"MarginContainer/MainContainer/SidePanel/BtnRender"
 @onready var btn_clear    = $"MarginContainer/MainContainer/SidePanel/BtnClear"
-@onready var status_label = $"MarginContainer/MainContainer/SidePanel/StatusLabel"
+@onready var status_label = $"StatusPanel/StatusLabel"
 @onready var scroll       = $"MarginContainer/MainContainer/ChatPanel/Scroll"
 @onready var btn_back_home = $"MarginContainer/MainContainer/SidePanel/btnBackHome" 
 const HOME_SCENE := preload("res://ui/home/Home.tscn")
 
+var _base_status := ""
+var _dot_timer := 0.0
 
 var controller: ChatController
 
@@ -24,8 +26,8 @@ func _ready() -> void:
 	btn_clear.pressed.connect(_on_clear)
 	btn_render.pressed.connect(_on_render_last)
 	btn_back_home.pressed.connect(_on_back_home)
-
-	status_label.text = "Bereit. Tippe eine Frage ein…"
+	controller.llm_state_changed.connect(_on_llm_state_changed)
+	status_label.text = "Bereit. Bitte beschreiben sie den Prozess…"
 	print_rich("[color=lightgreen][LlmChatWindow][/color] UI bereit.")
 
 	if BPMNData.chat_history.is_empty():
@@ -144,3 +146,30 @@ func _restore_chat() -> void:
 		messages_box.add_child(lbl)
 
 	_scroll_to_bottom()
+	
+func _on_llm_state_changed(state: ChatController.LlmState) -> void:
+	match state:
+		ChatController.LlmState.IDLE:
+			_set_status("LLM Wartet auf User Input.")
+		ChatController.LlmState.SENDING:
+			status_label.text = "Nachricht wird gesendet"
+		ChatController.LlmState.WAITING:
+			_set_status("LLM analysiert den Prozess")
+		ChatController.LlmState.VALIDATING:
+			status_label.text = "BPMN-JSON wird geprüft"
+		ChatController.LlmState.REFINING:
+			status_label.text = "Modell wird automatisch korrigiert"
+
+func _set_status(text: String) -> void:
+	_base_status = text
+	status_label.text = text
+	_dot_timer = 0.0
+
+func _process(delta: float) -> void:
+	if controller.llm_state != ChatController.LlmState.WAITING:
+		return
+
+
+	_dot_timer += delta
+	var dots := int(_dot_timer) % 4
+	status_label.text = _base_status + ".".repeat(dots)

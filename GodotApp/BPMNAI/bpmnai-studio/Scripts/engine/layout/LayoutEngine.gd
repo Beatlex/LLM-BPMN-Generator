@@ -82,7 +82,7 @@ func _apply_gateway_vertical_offsets(node_map: Dictionary) -> void:
 						y = base_y + offset * LANE_SPACING_Y
 					else:
 						# UNGERADE Anzahl (5,7,9…)
-						# → EINE echte Mitte
+						# EINE echte Mitte
 						y = base_y + (i - mid) * LANE_SPACING_Y
 
 			child.global_position = Vector2(x, y)
