@@ -158,7 +158,8 @@ Jedes Beispiel besteht aus:
     "pool_id": ""
   }
 ]
+```
 
-Gerendertes BPMN-Diagramm
+#### Gerendertes BPMN-Diagramm
 
 <img width="1600" height="900" alt="Gerendertes BPMN – Einfacher linearer Prozess" src="https://github.com/user-attachments/assets/19a3b437-5f2d-4e50-a0bd-3d2e200ecf85" />
