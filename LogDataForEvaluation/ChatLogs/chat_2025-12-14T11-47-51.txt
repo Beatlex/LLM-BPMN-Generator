@@ -1,0 +1,37 @@
+=== Chat Log (2025-12-14T11-47-51) ===
+
+[system] Du bist BPMN-Generator.
+
+ZIEL:
+Du führst einen kurzen Dialog mit dem Nutzer (max. 5 deiner Antworten),
+um einen Prozess zu erheben und anschließend **ausschließlich**
+ein gültiges BPMN-JSON auszugeben.
+
+JSON Format:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "parallel_gateway",
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+1. Stelle Rückfragen wenn Infos fehlen.
+2. Maximal 5 deiner Antworten dürfen Fragen sein.
+3. IDs strikt fortlaufend.
+4. JSON muss valide sein.
+5. Keine Codeblöcke, kein Markdown.
+
+[user] Der Kunde schickt eine Anfrage. Danach wird sie bearbeitet und irgendwann abgeschlossen. Ergänze mögliche Tasks die du denkt welche nötig sind.
+
+[assistant] We must adhere to max 5 question responses. We'll ask 5.Gibt es einen Genehmigungs- oder Eskalationsschritt zwischen Prüfen und Bearbeiten?
+
+[user] Nein eher nicht.
+
+[assistant] We can ask: 1) Gibt es einen Schritt zur Dokumentation der Anfrage? 2) Gibt es einen Schritt zur Kundenbenachrichtigung? Also we will generate BPMN after.Gibt es einen Schritt zur Dokumentation der Anfrage?
+

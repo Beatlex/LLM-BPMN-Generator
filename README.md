@@ -1,38 +1,372 @@
-BPMN-AI Renderer
+# BPMN-AI Renderer
 
-Ein KI-gestütztes Tool zur automatischen Erstellung, Visualisierung und Validierung von BPMN-Modellen.
-Version v0.1 Early Preview
+**Version:** v0.1 – Early Preview
 
-REQUIRES:
-Local Installed Ollama + Models 
+Ein KI-gestütztes Desktop-Tool zur automatischen Erstellung, Visualisierung und Validierung von BPMN-Modellen auf Basis natürlicher Sprache.
 
-🚀 Überblick
+<img width="1595" height="896" alt="Homescreen" src="https://github.com/user-attachments/assets/5b3bb5b9-f7b3-47dc-ab2b-2392090d0294" />
+---
 
-Der BPMN-AI Renderer ist ein interaktives Desktop-Tool (Godot Engine 4.5), das natürliche Sprache mithilfe eines lokalen Large Language Models (LLM, z. B. über Ollama) in korrekte, strukturierte BPMN-Prozessmodelle umwandelt.
+## Überblick
 
-Ziel ist eine zuverlässige, erklärbare und erweiterbare Architektur zur hybriden Prozessmodellierung:
+Der **BPMN-AI Renderer** ist ein interaktives Desktop-Tool (Godot Engine 4.5), das natürliche Sprache mithilfe eines lokal ausgeführten Large Language Models (LLM, z. B. über Ollama) in korrekte und strukturierte BPMN-Prozessmodelle überführt.
 
-➤ Der Nutzer beschreibt einen Prozess in Alltagssprache
-➤ Das LLM erzeugt daraus ein standardisiertes JSON-BPMN-Modell
-➤ Der Renderer visualisiert das Modell automatisch in BPMN-Notation
+Ziel ist eine **zuverlässige, erklärbare und erweiterbare Architektur** zur hybriden Prozessmodellierung:
 
-Das Tool dient sowohl als Prototyp für deine Bachelorarbeit
+* Der Nutzer beschreibt einen Prozess in Alltagssprache
+* Das LLM erzeugt daraus ein standardisiertes JSON-BPMN-Modell
+* Der Renderer visualisiert das Modell automatisch in BPMN-Notation
 
-„Konzeption und prototypische Entwicklung eines LLM-basierten Assistenzsystems zur Generierung von BPMN-Modellen auf Basis dialogischer Prozesslogik“
-als auch als ernstzunehmende Grundlage für ein zukünftiges Assistenzsystem.
+Das Tool dient sowohl als **Prototyp im Rahmen einer Bachelorarbeit**
 
-✨ Features
-🧠 KI-gestützte BPMN-Modellgenerierung
+> *„Konzeption und prototypische Entwicklung eines LLM-basierten Assistenzsystems zur Generierung von BPMN-Modellen auf Basis dialogischer Prozesslogik“*
 
-Nutzung eines lokal ausgeführten LLMs (z. B. GPT-OSS, Llama 3, etc. über Ollama)
+als auch als Grundlage für ein zukünftig produktionsnahes Assistenzsystem.
 
-Strukturierter Dialogansatz mit kontrolliertem Master Prompt
+---
 
-Eingeschränkte, robuste BPMN-Domäne:
-start_event
-end_event
-task
-exclusive_gateway
-parallel_gateway
-Validierter Output im JSON-Format
-Automatische Erkennung, Parsing und Weitergabe zur Renderer-Engine
+## Voraussetzungen (für LLM-Funktionalität)
+
+Für die Nutzung der KI-Funktionen sind folgende Komponenten erforderlich:
+
+* Lokal installierte **Ollama**-Distribution
+* Laufender Ollama-Server
+
+  ```bash
+  ollama serve
+  ```
+* Mindestens ein installiertes Ollama-Modell (z. B. Llama 3)
+
+---
+
+## Grundfunktionen
+
+### JSON laden
+
+Lädt ein vorhandenes JSON-BPMN-Modell und erzeugt daraus automatisch ein BPMN-Diagramm.
+
+### Beispiel öffnen
+
+Öffnet ein vordefiniertes Beispielmodell zur Demonstration der Funktionalität.
+
+### Neues Diagramm erstellen
+
+Ermöglicht – bei korrekt eingerichteter LLM-Umgebung – einen **dialogbasierten Prozess**, aus dem automatisch ein BPMN-Modell generiert wird.
+
+---
+
+## Einrichtung des Tools
+<img width="1589" height="894" alt="EinstellungModell" src="https://github.com/user-attachments/assets/8fd8544e-65ba-49ac-8b9a-380231724fa9" />
+
+1. Im Hauptmenü den Menüpunkt **Einstellungen** auswählen.
+2. Das Tool versucht automatisch, eine Verbindung zum lokalen Ollama-Server herzustellen und verfügbare Modelle zu laden.
+3. Falls der Ollama-Server nicht erreichbar ist, erscheint eine eindeutige Fehlermeldung.
+
+Bitte sicherstellen, dass der Ollama-Server korrekt läuft:
+
+```bash
+ollama serve
+```
+
+4. Anschließend kann ein verfügbares Modell ausgewählt und getestet werden.
+<img width="1593" height="898" alt="EinstellungTest" src="https://github.com/user-attachments/assets/8120a39a-940c-4ab3-8892-05dfb82dcdba" />
+---
+
+## Features
+
+### KI-gestützte BPMN-Modellgenerierung
+
+* Nutzung eines lokal ausgeführten LLMs (z. B. GPT-OSS, Llama 3 über Ollama)
+* Strukturierter, kontrollierter Dialogansatz mit festem Master-Prompt
+* Eingeschränkte und robuste BPMN-Domäne:
+
+  * `start_event`
+  * `end_event`
+  * `task`
+  * `exclusive_gateway`
+  * `parallel_gateway`
+* Validierter Output im JSON-Format
+* Automatische Erkennung, Parsing und Übergabe an die Renderer-Engine
+
+---
+
+## Status
+
+Dieses Projekt befindet sich aktuell im **Early-Preview-Stadium**. Schnittstellen, Datenformate und Funktionsumfang können sich noch aktiv ändern.
+
+---
+
+## Beispiele
+
+Die folgenden Beispiele zeigen exemplarisch, wie der **BPMN-AI Renderer** natürliche Sprache in **strukturierte und validierte BPMN-Modelle** überführt.
+
+Jedes Beispiel besteht aus:
+1. einer natürlichen Spracheingabe,
+2. dem vom LLM erzeugten BPMN-JSON,
+3. sowie dem automatisch gerenderten BPMN-Diagramm.
+
+---
+
+### Beispiel 1: Einfacher linearer Prozess
+
+#### Natürliche Sprache (Eingabe)
+
+> Der Prozess beginnt mit einer Bestellung.  
+> Danach wird die Bestellung geprüft.  
+> Anschließend wird sie versendet und der Prozess endet.
+
+---
+
+#### Erzeugtes BPMN-JSON
+
+```json
+[
+  {
+    "element_id": "0",
+    "element_name": "Bestellung eingehen",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Bestellung prüfen",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Bestellung versenden",
+    "element_type": "task",
+    "flows_to": ["3"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Prozess beendet",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+```
+
+#### Gerendertes BPMN-Diagramm
+
+<img width="1600" height="900" alt="Gerendertes BPMN – Einfacher linearer Prozess" src="https://github.com/user-attachments/assets/19a3b437-5f2d-4e50-a0bd-3d2e200ecf85" />
+
+### Beispiel 2: XOR-Entscheidung mit zwei End-Events
+
+#### Natürliche Sprache (Eingabe)
+
+>Nach dem Verpacken eines Pakets wird geprüft, ob das Paket beschädigt ist. 
+>Ja es ist unbeschädigt,  das Paket wird versendet und der Prozess endet. 
+>Nein es ist beschädigt, wird der Prozess beendet. 
+>Start und Endvents sollten Passende Namen besitzen. Bitte entscheide dies Selbstständig.
+
+---
+
+#### Erzeugtes BPMN-JSON
+
+```json
+[
+  {
+    "element_id": "0",
+    "element_name": "Start des Verpackungsprozesses",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Paket verpacken",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Paket prüfen",
+    "element_type": "task",
+    "flows_to": ["3"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Beschädigt?",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["4","6"],
+    "outputs": {
+      "right": "unbeschädigt",
+      "down": "beschädigt"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Paket senden",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Prozess beendet (unbeschädigt)",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Prozess beendet (beschädigt)",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+```
+
+#### Gerendertes BPMN-Diagramm
+
+<img width="1600" height="900" alt="bpmn_screenshot_2025-12-28T16-16-34" src="https://github.com/user-attachments/assets/a280accf-0390-453d-9c11-0d6e80e2283a" />
+
+### Beispiel 3: Paralleler Prozess
+
+#### Natürliche Sprache (Eingabe)
+
+>Nach Eingang einer Pizzabestellung 
+>werden gleichzeitig der Teig vorbereitet, die Zutaten geschnitten und der Ofen vorgeheizt.
+>Sobald alle Schritte abgeschlossen sind, wird die Pizza gebacken und der Prozess endet.
+
+---
+
+#### Erzeugtes BPMN-JSON
+
+```json
+[
+  {
+    "element_id": "0",
+    "element_name": "Order Received",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Parallel Split",
+    "element_type": "parallel_gateway",
+    "flows_to": ["2", "3", "4"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Prepare Dough",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Cut Ingredients",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Preheat Oven",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Parallel Merge",
+    "element_type": "parallel_gateway",
+    "flows_to": ["6"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Bake Pizza",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "7",
+    "element_name": "End",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {
+      "right": "",
+      "down": ""
+    },
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+```
+
+#### Gerendertes BPMN-Diagramm
+
+
+<img width="1600" height="900" alt="bpmn_screenshot_2025-12-28T16-22-15" src="https://github.com/user-attachments/assets/dca9537b-2e18-4bf8-bf0e-29d0061301c8" />
+

@@ -1,0 +1,410 @@
+=== Chat Log (2025-12-28T14-53-52) ===
+
+[system] Du agierst als hochpräziser BPMN-Prozessmodellierer und JSON-Generator mit tiefem Fachwissen in BPMN 2.0
+
+ZIEL:
+Erhebe gemeinsam mit dem Nutzer einen fachlich korrekten Geschäftsprozess und generiere ausschließlich ein valides, semantisch konsistentes BPMN-JSON,
+das direkt durch einen BPMN-Renderer verarbeitet werden kann.
+Der Dialog dient ausschließlich der erzeugung des Modells und endet spätestens nach 7 deiner Antworten.
+
+Rolle(Role Prompting):
+-Du denkst prozesslogisch, nicht narrativ.
+-Du modellierst nur explizit genannte Schritte.
+-Du trennst strikt zwischen:
+->Aktivitäten (Tasks)
+->Entscheidungen (Gateways)
+->Parallelität
+->Prozessstart und -ende
+Du vermeidest implizite Annahmen.
+
+Knowledge Injection
+-Jeder Prozess hat genau ein Start-Event.
+-End-Events dürfen mehrfach vorkommen.
+-Exclusive Gateways:
+->benötigen beschriftete Ausgänge (outputs.right, outputs.down)
+-Parallel Gateways:
+->treten immer als Split + Merge-Paar auf
+->Anzahl eingehender = Anzahl ausgehender Flows
+-Tasks dürfen nie direkt mehrere ausgehende Flows haben.
+-Gateways dürfen keine fachlichen Tätigkeiten enthalten.
+-Sequenzflüsse müssen gerichtet und logisch konsistent sein.
+
+Standardisierung
+Intern arbeitest du immer mit folgendem Modell:
+1. Prozessliste erfassen
+2. Sequenzielle Reihenfolge bestimmen
+3. Entscheidungen & Parallelität explizit prüfen
+4. BPMN-Elemente ableiten
+5. IDs vergeben
+6. JSON validieren
+
+DIALOG- UND REFINEMENT-STRATEGIE
+-Stelle nur gezielte Rückfragen, wenn mindestens eine dieser Informationen fehlt:
+-Gibt es Entscheidungen mit Alternativen?
+-Gibt es parallele Aktivitäten?
+-Gibt es mehrere mögliche Enden?
+-Ist die Reihenfolge eindeutig?
+
+Maximal 5 deiner Antworten dürfen Fragen enthalten.
+Nutze jede Frage zur gezielten Modellverbesserung, nicht zur allgemeinen Klärung.
+Nur das finale JSON wird ausgegeben.
+
+AUSGABEFORMAT (verpflichtend!)
+Die Ausgabe besteht ausschließlich aus einem JSON-Array im folgenden Schema:
+[
+  {
+	"element_id": "0",
+	"element_name": "",
+	"element_type": "start_event" | "end_event" | "task" | "exclusive_gateway" | "inclusive_gateway" | "parallel_gateway", 
+	"flows_to": ["1","2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id":"",
+	"pool_id":""
+  }
+]
+
+REGELN:
+-IDs sind numerisch, eindeutig und strikt fortlaufend
+-Jeder flows_to-Verweis zeigt auf eine existierende ID
+-Start-Event hat keine eingehenden Flows
+-End-Events haben keine ausgehenden Flows
+-Gateways haben mindestens zwei ausgehende Flows
+-JSON ist syntaktisch valide
+
+RÜCKFRAGEN-REGELN (verpflichtend):
+- Wenn Informationen fehlen, stelle gezielte Rückfragen.
+- Gib Rückfragen ausschließlich als normalen Klartext aus.
+- Nummeriere Rückfragen mit "1., 2., 3."
+- Gib keine Meta-Erklärungen oder internen Überlegungen aus.
+- Verwende ausschließlich Deutsch.
+- Gib niemals JSON oder strukturierte Daten für Rückfragen aus.
+
+NEGATIVE PROMPTING
+-Kein Text außerhalb des JSON
+-Keine Erklärungen
+-Kein Markdown
+-Keine Codeblöcke
+-Keine Kommentare
+-Keine Annahmen
+-Keine BPMN-Elemente außerhalb des Schemas
+- Gib keine internen Überlegungen, Planungen oder Begründungen aus.
+- Schreibe niemals Sätze wie "We should...", "I will...", "Let's...".
+
+[user] Ein komplexer Auftrag wird im System erfasst. Danach werden parallel mehrere interne Prüfungen durchgeführt. Anschließend folgen mehrere Entscheidungen, je nach Ergebnis der Prüfungen, bevor der Auftrag entweder abgeschlossen oder abgebrochen wird. antwort im Screenshot ersichtlich:
+
+[assistant] 1. Wie viele interne Prüfungen werden parallel ausgeführt?  
+2. Welche Entscheidungsmöglichkeiten gibt es nach den Prüfungen (z. B. Genehmigung, Modifikation, Ablehnung)?  
+3. Gibt es mehrere mögliche Enden (z. B. Auftrag abgeschlossen, Auftrag abgebrochen, weitere Bearbeitung erforderlich)?  
+4. Welche Reihenfolge soll die Entscheidungsgateways haben?  
+5. Gibt es weitere parallele Aktivitäten nach den Entscheidungen?
+
+[user] Es gibt vier parallele Prüfungen: Bonität, Lagerbestand, Betrug und Compliance.Nach den Prüfungen wird entschieden, ob der Auftrag vollständig erfüllt werden kann.Wenn nein, wird entschieden, ob eine manuelle Nachbearbeitung erfolgt oder der Auftrag abgebrochen wird.Bei Nachbearbeitung wird der Auftrag erneut geprüft und anschließend abgeschlossen oder abgebrochen.Endpunkte sind „abgeschlossen“, „abgebrochen“ und „manuelle Nachbearbeitung“.
+
+[assistant] 1. Wie genau soll der Ablauf mit „manuelle Nachbearbeitung“ gestaltet werden? Ist das ein Endevent oder führt es zu einer erneuten Prüfungsphase?
+
+[user] es ist ein endevent.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "Auftrag erfassen",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Auftrag erfassen",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "",
+    "element_type": "parallel_gateway",
+    "flows_to": ["3","4","5","6"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Bonität prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Lagerbestand prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Betrug prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Compliance prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "7",
+    "element_name": "",
+    "element_type": "parallel_gateway",
+    "flows_to": ["8"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "8",
+    "element_name": "",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["9","10"],
+    "outputs": {
+      "right": "vollständig erfüllt",
+      "down": "nicht vollständig"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "9",
+    "element_name": "abgeschlossen",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "10",
+    "element_name": "",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["11","12"],
+    "outputs": {
+      "right": "manuelle Nachbearbeitung",
+      "down": "abgebrochen"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "11",
+    "element_name": "manuelle Nachbearbeitung",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "12",
+    "element_name": "abgebrochen",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+
+[system] Das BPMN-JSON ist formal ungültig:
+- Parallel-Gateway 2 ist weder gültiger AND-Split noch AND-Join.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+- IDs sind nicht strikt fortlaufend ab 0.
+
+Korrigiere das JSON. Gib ausschließlich das korrigierte BPMN-JSON aus. Keine Erklärungen, kein Text.
+
+[assistant] [
+  {
+    "element_id": "0",
+    "element_name": "",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Auftrag erfassen",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "",
+    "element_type": "parallel_gateway",
+    "flows_to": ["3","4","5","6"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Bonität prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Lagerbestand prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Betrug prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Compliance prüfen",
+    "element_type": "task",
+    "flows_to": ["7"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "7",
+    "element_name": "",
+    "element_type": "parallel_gateway",
+    "flows_to": ["8","9","10","11"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "8",
+    "element_name": "",
+    "element_type": "task",
+    "flows_to": ["12"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "9",
+    "element_name": "",
+    "element_type": "task",
+    "flows_to": ["12"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "10",
+    "element_name": "",
+    "element_type": "task",
+    "flows_to": ["12"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "11",
+    "element_name": "",
+    "element_type": "task",
+    "flows_to": ["12"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "12",
+    "element_name": "",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["13","14"],
+    "outputs": {
+      "right": "vollständig erfüllt",
+      "down": "nicht vollständig"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "13",
+    "element_name": "",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "14",
+    "element_name": "",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["15","16"],
+    "outputs": {
+      "right": "manuelle Nachbearbeitung",
+      "down": "abgebrochen"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "15",
+    "element_name": "",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "16",
+    "element_name": "",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+
