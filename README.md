@@ -96,11 +96,57 @@ Dieses Projekt befindet sich aktuell im **Early-Preview-Stadium**. Schnittstelle
 
 ---
 
-## Beispiele
+Beispiele
 
-### Beispiel 1: Einfacher linearer Prozess
+Die folgenden Beispiele zeigen exemplarisch, wie der BPMN-AI Renderer natürliche Sprache in strukturierte BPMN-Modelle überführt.
 
-**Natürliche Sprache (Eingabe):**
-> Der Prozess beginnt mit einer Bestellung.  
-> Danach wird die Bestellung geprüft.  
-> Anschließend wird sie versendet und der Prozess endet.
+Beispiel 1: Einfacher linearer Prozess
+Natürliche Sprache (Eingabe)
+
+Der Prozess beginnt mit einer Bestellung.
+Danach wird die Bestellung geprüft.
+Anschließend wird sie versendet und der Prozess endet.
+
+Erzeugtes BPMN-JSON
+[
+  {
+    "element_id": "0",
+    "element_name": "Bestellung eingehen",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Bestellung prüfen",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Bestellung versenden",
+    "element_type": "task",
+    "flows_to": ["3"],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Prozess beendet",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": { "right": "", "down": "" },
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+
+Gerendertes BPMN-Diagramm
+
+<img width="1600" height="900" alt="Gerendertes BPMN – Einfacher linearer Prozess" src="https://github.com/user-attachments/assets/19a3b437-5f2d-4e50-a0bd-3d2e200ecf85" />
