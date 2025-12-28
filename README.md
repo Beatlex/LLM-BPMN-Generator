@@ -163,3 +163,91 @@ Jedes Beispiel besteht aus:
 #### Gerendertes BPMN-Diagramm
 
 <img width="1600" height="900" alt="Gerendertes BPMN – Einfacher linearer Prozess" src="https://github.com/user-attachments/assets/19a3b437-5f2d-4e50-a0bd-3d2e200ecf85" />
+
+### Beispiel 2: XOR-Entscheidung mit zwei End-Events
+
+#### Natürliche Sprache (Eingabe)
+
+> Nach dem Verpacken eines Pakets wird geprüft, ob das Paket beschädigt ist. 
+> Ja es ist unbeschädigt,  das Paket wird versendet und der Prozess endet. 
+> Nein es ist beschädigt, wird der Prozess beendet.
+
+---
+
+#### Erzeugtes BPMN-JSON
+
+```json
+[
+  {
+    "element_id": "0",
+    "element_name": "Start des Verpackungsprozesses",
+    "element_type": "start_event",
+    "flows_to": ["1"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "1",
+    "element_name": "Paket verpacken",
+    "element_type": "task",
+    "flows_to": ["2"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "2",
+    "element_name": "Paket prüfen",
+    "element_type": "task",
+    "flows_to": ["3"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "3",
+    "element_name": "Beschädigt?",
+    "element_type": "exclusive_gateway",
+    "flows_to": ["4","6"],
+    "outputs": {
+      "right": "unbeschädigt",
+      "down": "beschädigt"
+    },
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "4",
+    "element_name": "Paket senden",
+    "element_type": "task",
+    "flows_to": ["5"],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "5",
+    "element_name": "Prozess beendet (unbeschädigt)",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  },
+  {
+    "element_id": "6",
+    "element_name": "Prozess beendet (beschädigt)",
+    "element_type": "end_event",
+    "flows_to": [],
+    "outputs": {},
+    "lane_id": "",
+    "pool_id": ""
+  }
+]
+```
+
+#### Gerendertes BPMN-Diagramm
+
+<img width="1600" height="900" alt="bpmn_screenshot_2025-12-28T16-16-34" src="https://github.com/user-attachments/assets/a280accf-0390-453d-9c11-0d6e80e2283a" />
+
