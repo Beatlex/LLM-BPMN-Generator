@@ -1,6 +1,6 @@
 # BPMN-AI Renderer
 
-**Version:** v0.1 – Early Preview
+**Version:** v1.0
 
 Ein KI-gestütztes Desktop-Tool zur automatischen Erstellung, Visualisierung und Validierung von BPMN-Modellen auf Basis natürlicher Sprache.
 
