@@ -16,6 +16,17 @@ enum LlmResultType {
 	INVALID_JSON,
 	VALID_JSON
 }
+enum LlmState {
+	IDLE,
+	SENDING,
+	WAITING,
+	VALIDATING,
+	REFINING
+}
+
+signal llm_state_changed(state: LlmState)
+
+var llm_state: LlmState = LlmState.IDLE
 
 func _ready() -> void:
 	client = OllamaClient.new()
@@ -71,7 +82,7 @@ REGELN:
 	_log("System-Prompt geladen: %d Zeichen" % master.length())
 
 func request(user_text: String) -> void:
-	# User-Nachricht anhängen
+	_set_state(LlmState.SENDING)
 	messages.append({
 		"role": "user",
 		"content": user_text
@@ -79,7 +90,7 @@ func request(user_text: String) -> void:
 
 	_log("Sende Chat-History an LLM (%d Nachrichten)." % messages.size())
 
-	# LLM aufrufen
+	_set_state(LlmState.WAITING)
 	var reply := await client.chat(messages)
 
 	_log("Antwort vom LLM (Länge=%d)" % reply.length())
@@ -88,26 +99,24 @@ func request(user_text: String) -> void:
 		"content": reply
 	})
 
+	_set_state(LlmState.VALIDATING)
 	# Versuch: JSON parsen
 	var json := JSON.new()
 	var parse_err := json.parse(reply.strip_edges())
 
-	# Kein JSON → Dialog geht weiter
 	if parse_err != OK or not (json.data is Array):
 		response_ready.emit(reply)
+		_set_state(LlmState.IDLE)
 		return
-
-	# JSON vorhanden → validieren
 	var result := BpmnJsonValidator.validate(json.data)
 
-	# Valides BPMN → Session erfolgreich beendet
 	if result.valid:
 		save_bpmn_json(json.data)
 		log_session_once()
 		response_ready.emit(reply)
+		_set_state(LlmState.IDLE)
 		return
 
-	# JSON ungültig → strukturierte Rückfrage
 	var error_prompt := "Das BPMN-JSON ist formal ungültig:\n"
 	for e in result.errors:
 		error_prompt += "- " + e + "\n"
@@ -122,11 +131,11 @@ func request(user_text: String) -> void:
 	})
 
 	_log("❗ BPMN-JSON ungültig – LLM-Korrektur angefordert")
-
+	_set_state(LlmState.REFINING)
+	_set_state(LlmState.WAITING)
 	# UI informieren
 	response_ready.emit("⚠️ BPMN-Modell unvollständig – Korrektur wird angefordert …")
-
-	# 🔁 LLM erneut aufrufen (einmaliger Korrekturversuch)
+	#  LLM erneut aufrufen 
 	var corrected_reply := await client.chat(messages)
 
 	messages.append({
@@ -142,7 +151,8 @@ func request(user_text: String) -> void:
 		if corrected_json.data is Array:
 			save_bpmn_json(corrected_json.data)
 
-	# 🔚 Session sauber beenden
+	# Session sauber beenden
+	_set_state(LlmState.IDLE)
 	log_session_once()
 
 func _log(msg: String) -> void:
@@ -263,3 +273,9 @@ func log_session_once() -> void:
 		return
 	session_logged = true
 	_save_chat_log()
+
+func _set_state(state: LlmState) -> void:
+	if llm_state == state:
+		return
+	llm_state = state
+	llm_state_changed.emit(state)

@@ -1,0 +1,152 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Paket prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"3",
+			"9"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "9",
+			"right": "3"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Reparatur prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"4"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"5",
+			"8"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "8",
+			"right": "5"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Nachbearbeiten",
+		"element_type": "task",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "Versenden",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "7",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "8",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "9",
+		"element_name": "Versenden",
+		"element_type": "task",
+		"flows_to": [
+			"10"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "10",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	}
+]

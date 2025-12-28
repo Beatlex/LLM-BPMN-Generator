@@ -38,6 +38,7 @@ func _on_file_selected(path:String) -> void:
 		return
 
 	BPMNData.pending_bpmn = parsed
+	BPMNData.origin = BPMNData.Origin.HOME  
 
 	get_tree().change_scene_to_file(LOADER_SCENE)
 
@@ -50,9 +51,15 @@ func _on_example_pressed() -> void:
 	get_tree().change_scene_to_file(EXAMPLE_SCENE)
 
 func _on_new_pressed() -> void:
-	get_tree().change_scene_to_file(CHAT_SCENE)  
+	# 🔥 HARTE RESET-SEMANTIK
+	BPMNData.chat_history.clear()
+	BPMNData.pending_bpmn.clear()
+	BPMNData.origin = BPMNData.Origin.CHAT
+
+	get_tree().change_scene_to_file(CHAT_SCENE)
+
 
 func _start_bpmn(data:Array) -> void:
+	BPMNData.pending_bpmn = data
+	BPMNData.origin = BPMNData.Origin.HOME   
 	get_tree().change_scene_to_file(LOADER_SCENE)
-	await get_tree().process_frame           
-	get_tree().current_scene.call_deferred("load_json_data", data)

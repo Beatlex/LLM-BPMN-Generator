@@ -10,8 +10,8 @@ const BACKFLOW_OFFSET_X := 80
 
 func _ready():
 	z_index = -10
-	line.z_index = -10       # immer hinter Tasks
-	arrow.z_index = 10       # Pfeil über Linie
+	line.z_index = -10
+	arrow.z_index = 10
 
 
 func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
@@ -21,14 +21,18 @@ func setup(src_port: Node2D, dst_port: Node2D, route_type := 0) -> void:
 		push_error("[FlowLine2D] ⚠ Fehlende Line2D!!")
 		return
 
-	var start := src_port.global_position
-	var end   := dst_port.global_position
+	var start := _get_port_center(src_port)
+	var end   := _get_port_center(dst_port)
 
-	line.points = _compute_path(start, end, route_type)
-	_update_arrow(line.points)
+	line.points = _compute_path(start, end, route_type, dst_port)
+	_update_arrow(line.points, dst_port)
 
-
-func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVector2Array:
+func _compute_path(
+	start: Vector2,
+	end: Vector2,
+	route_type: int,
+	dst_port: Node2D
+) -> PackedVector2Array:
 
 	# 99 = BACKFLOW (Rücksprung)
 	if route_type == 99:
@@ -45,22 +49,30 @@ func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVecto
 
 	# 1 = Bottom-Branch (Split ↓ →)
 	if route_type == 1:
-		var p := Vector2(start.x, end.y)
-		return [start, p, end]
+		return [start, Vector2(start.x, end.y), end]
 
 	# 2 = Top-Branch (Split ↑ →)
 	if route_type == 2:
-		var p := Vector2(start.x, end.y)
-		return [start, p, end]
+		return [start, Vector2(start.x, end.y), end]
 
-	# 3 = MERGE Top/Bottom
+	# 3 = MERGE Top / Bottom exakt auf Port-X sammeln, dann vertikal
 	if route_type == 3:
-		var p := Vector2(end.x, start.y)
-		return [start, p, end]
+		var port_pos := end 
 
-	# 4 = MERGE Mitte
+		return [
+			start,
+			Vector2(port_pos.x, start.y), # horizontal bis exakt Port-X
+			port_pos                        # vertikal in den Port
+	]
+	
+	# 4 = MERGE Mitte 
 	if route_type == 4:
-		return [start, end]
+		var epsilon := 1.0  # minimaler horizontaler Versatz
+		return [
+			start,
+			Vector2(end.x + epsilon, end.y)
+		]
+
 
 	# 0 = Default (Dogleg)
 	var mid_x := (start.x + end.x) * 0.5
@@ -72,27 +84,63 @@ func _compute_path(start: Vector2, end: Vector2, route_type: int) -> PackedVecto
 	]
 
 
-func _update_arrow(pts: PackedVector2Array):
-	if pts.size() < 2:
+func _update_arrow(pts: PackedVector2Array, dst_port: Node2D):
+	if pts.size() < 2 or dst_port == null:
 		return
 
-	var p1: Vector2 = pts[pts.size() - 2]
-	var p2: Vector2 = pts[pts.size() - 1]
-	var dir: Vector2 = (p2 - p1).normalized()
+	var end := pts[pts.size() - 1]
+	var arrow_pos := end
 
-	# Pfeil leicht zurückziehen
-	arrow.global_position = p2 - dir * ARROW_BACK_OFFSET
+	# ---- MERGE-GATEWAY-LOGIK ----
+	var gateway := dst_port.get_parent()
+	if gateway:
+		var center = gateway.global_position
+		var port_pos := dst_port.global_position
 
-	# Pfeilrichtung bestimmen
+		var dx = port_pos.x - center.x
+		var dy = port_pos.y - center.y
+
+		# ---- MID (links → ins Gateway) ----
+		if abs(dx) > abs(dy):
+			arrow.rotation = 0.0               # →
+			arrow.global_position = Vector2(
+				port_pos.x - ARROW_BACK_OFFSET,
+				port_pos.y
+			)
+			return
+
+		# ---- TOP (oben → nach unten) ----
+		if dy < 0.0:
+			arrow.rotation = PI / 2            # ↓
+			arrow.global_position = Vector2(
+				port_pos.x,
+				port_pos.y - ARROW_BACK_OFFSET
+			)
+			return
+
+		# ---- BOTTOM (unten → nach oben) ----
+		if dy > 0.0:
+			arrow.rotation = -PI / 2           # ↑
+			arrow.global_position = Vector2(
+				port_pos.x,
+				port_pos.y + ARROW_BACK_OFFSET
+			)
+			return
+
+	# ---- FALLBACK (Tasks / Events) ----
+	var p1 := pts[pts.size() - 2]
+	var dir := (end - p1).normalized()
+	arrow.global_position = end - dir * ARROW_BACK_OFFSET
+
 	if abs(dir.x) > abs(dir.y):
-		# Horizontal dominiert
-		if dir.x > 0:
-			arrow.rotation = deg_to_rad(0)     # →
-		else:
-			arrow.rotation = deg_to_rad(180)   # ←
+		arrow.rotation = 0.0 if dir.x > 0.0 else PI
 	else:
-		# Vertikal dominiert
-		if dir.y > 0:
-			arrow.rotation = deg_to_rad(90)    # ↓
-		else:
-			arrow.rotation = deg_to_rad(-90)   # ↑
+		arrow.rotation = PI / 2 if dir.y > 0.0 else -PI / 2
+
+
+func _get_port_center(port: Node2D) -> Vector2:
+	if port is Area2D:
+		for c in port.get_children():
+			if c is CollisionShape2D and c.shape:
+				return c.global_transform.origin
+	return port.global_position

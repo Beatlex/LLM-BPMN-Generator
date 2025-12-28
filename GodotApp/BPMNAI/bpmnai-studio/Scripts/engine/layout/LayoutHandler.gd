@@ -17,16 +17,6 @@ func route_between_ports(source_node: Node2D, source_port: Area2D, target_node: 
 
 func apply_layout(all_nodes: Array) -> void:
 	_node_map = {}
-	var layer_map = assign_layers(all_nodes)
-	var lane_map = assign_lanes(all_nodes)
-	
-	print("\n--- LAYER MAP ---")
-	for node in layer_map.keys():
-		print("Node ID:", node.element_id, "→ Layer:", layer_map[node])
-		print("\n--- LANE MAP ---")
-		
-	for node in lane_map.keys():
-			print("Node ID:", node.element_id, "→ Lane Index:", lane_map[node])
 	for node in all_nodes:
 		if "element_id" in node:
 			_node_map[node.element_id] = node
@@ -34,6 +24,8 @@ func apply_layout(all_nodes: Array) -> void:
 	_layer_map = {}
 	_visited = {}
 
+	var layer_map = assign_layers(all_nodes)
+	var lane_map  = assign_lanes(all_nodes)
 
 	calculate_positions(layer_map, lane_map)
 

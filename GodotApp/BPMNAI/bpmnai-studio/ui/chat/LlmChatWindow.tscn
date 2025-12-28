@@ -70,15 +70,27 @@ text = "Render"
 layout_mode = 2
 text = "Clear"
 
-[node name="StatusLabel" type="Label" parent="MarginContainer/MainContainer/SidePanel"]
-modulate = Color(0.011764706, 0.011764706, 0.011764706, 1)
-self_modulate = Color(0.011764706, 0.011764706, 0.011764706, 1)
-layout_mode = 2
-text = "Status"
-
 [node name="btnBackHome" type="Button" parent="MarginContainer/MainContainer/SidePanel"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 8
 accessibility_name = "Zurück"
 text = "Zurück"
+
+[node name="StatusPanel" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(350, 0)
+layout_mode = 0
+offset_left = 1237.0
+offset_top = 341.0
+offset_right = 1286.0
+offset_bottom = 364.0
+size_flags_horizontal = 6
+size_flags_vertical = 4
+size_flags_stretch_ratio = 0.37
+metadata/_edit_use_anchors_ = true
+
+[node name="StatusLabel" type="Label" parent="StatusPanel"]
+modulate = Color(0.011764706, 0.011764706, 0.011764706, 1)
+self_modulate = Color(0.011764706, 0.011764706, 0.011764706, 1)
+layout_mode = 2
+text = "Status"

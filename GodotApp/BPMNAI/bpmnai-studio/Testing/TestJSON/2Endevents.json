@@ -1,0 +1,47 @@
+[
+  {
+	"element_id": "0",
+	"element_name": "Prozess startet",
+	"element_type": "start_event",
+	"flows_to": ["1"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "1",
+	"element_name": "Entscheidung vorbereiten",
+	"element_type": "task",
+	"flows_to": ["2"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "2",
+	"element_name": "Gateway Entscheidung",
+	"element_type": "exclusive_gateway",
+	"flows_to": ["3", "4"],
+	"outputs": { "right": "Option A", "down": "Option B" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "3",
+	"element_name": "Ende A erreicht",
+	"element_type": "end_event",
+	"flows_to": [],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "4",
+	"element_name": "Ende B erreicht",
+	"element_type": "end_event",
+	"flows_to": [],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  }
+]

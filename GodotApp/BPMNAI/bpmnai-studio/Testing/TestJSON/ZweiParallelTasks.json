@@ -1,0 +1,56 @@
+[
+  {
+	"element_id": "0",
+	"element_name": "Prozess startet",
+	"element_type": "start_event",
+	"flows_to": ["1"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "1",
+	"element_name": "",
+	"element_type": "parallel_gateway",
+	"flows_to": ["2", "3"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "2",
+	"element_name": "Parallele Aufgabe A",
+	"element_type": "task",
+	"flows_to": ["4"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "3",
+	"element_name": "Parallele Aufgabe B",
+	"element_type": "task",
+	"flows_to": ["4"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "4",
+	"element_name": "",
+	"element_type": "parallel_gateway",
+	"flows_to": ["5"],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  },
+  {
+	"element_id": "5",
+	"element_name": "Prozess beendet",
+	"element_type": "end_event",
+	"flows_to": [],
+	"outputs": { "right": "", "down": "" },
+	"lane_id": "",
+	"pool_id": ""
+  }
+]

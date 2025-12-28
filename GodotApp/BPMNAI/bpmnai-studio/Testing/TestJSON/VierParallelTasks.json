@@ -1,0 +1,50 @@
+[
+{
+"element_id": "0",
+"element_name": "Prozess starten",
+"element_type": "start_event",
+"flows_to": ["1"]
+},
+{
+"element_id": "1",
+"element_name": "Parallel Split",
+"element_type": "parallel_gateway",
+"flows_to": ["2", "3", "4", "5"]
+},
+{
+"element_id": "2",
+"element_name": "Parallele Aufgabe A",
+"element_type": "task",
+"flows_to": ["6"]
+},
+{
+"element_id": "3",
+"element_name": "Parallele Aufgabe B",
+"element_type": "task",
+"flows_to": ["6"]
+},
+{
+"element_id": "4",
+"element_name": "Parallele Aufgabe C",
+"element_type": "task",
+"flows_to": ["6"]
+},
+{
+"element_id": "5",
+"element_name": "Parallele Aufgabe D",
+"element_type": "task",
+"flows_to": ["6"]
+},
+{
+"element_id": "6",
+"element_name": "Parallel Merge",
+"element_type": "parallel_gateway",
+"flows_to": ["7"]
+},
+{
+"element_id": "7",
+"element_name": "Prozess abgeschlossen",
+"element_type": "end_event",
+"flows_to": []
+}
+]

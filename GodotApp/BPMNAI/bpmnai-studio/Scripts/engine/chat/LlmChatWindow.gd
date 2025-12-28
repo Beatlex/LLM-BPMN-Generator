@@ -5,11 +5,13 @@ extends Control
 @onready var send_button  = $"MarginContainer/MainContainer/ChatPanel/Input/Send"
 @onready var btn_render   = $"MarginContainer/MainContainer/SidePanel/BtnRender"
 @onready var btn_clear    = $"MarginContainer/MainContainer/SidePanel/BtnClear"
-@onready var status_label = $"MarginContainer/MainContainer/SidePanel/StatusLabel"
+@onready var status_label = $"StatusPanel/StatusLabel"
 @onready var scroll       = $"MarginContainer/MainContainer/ChatPanel/Scroll"
 @onready var btn_back_home = $"MarginContainer/MainContainer/SidePanel/btnBackHome" 
 const HOME_SCENE := preload("res://ui/home/Home.tscn")
 
+var _base_status := ""
+var _dot_timer := 0.0
 
 var controller: ChatController
 
@@ -18,18 +20,24 @@ func _ready() -> void:
 	add_child(controller)
 
 	controller.response_ready.connect(_on_llm_response)
-	
+
 	send_button.pressed.connect(_on_send)
 	input_field.text_submitted.connect(_on_text_submitted)
 	btn_clear.pressed.connect(_on_clear)
 	btn_render.pressed.connect(_on_render_last)
-
 	btn_back_home.pressed.connect(_on_back_home)
-
-	status_label.text = "Bereit. Tippe eine Frage ein…"
+	controller.llm_state_changed.connect(_on_llm_state_changed)
+	status_label.text = "Bereit. Bitte beschreiben sie den Prozess…"
 	print_rich("[color=lightgreen][LlmChatWindow][/color] UI bereit.")
 
-	_add_chat("BPMN-Assistent", "Bitte beschreiben Sie den zu modellierenden Prozess.")
+	if BPMNData.chat_history.is_empty():
+		_add_chat(
+			"BPMN-Assistent",
+			"Bitte beschreiben Sie den zu modellierenden Prozess."
+		)
+	else:
+		_restore_chat()
+
 
 func _log(msg: String) -> void:
 	print_rich("[color=lightgreen][LlmChatWindow][/color] " + msg)
@@ -53,13 +61,18 @@ func _on_llm_response(reply: String) -> void:
 	_add_chat("🤖 LLM", reply)
 	_scroll_to_bottom()
 
-func _add_chat(author: String, text: String, role: String = "") -> void:
+func _add_chat(author: String, text: String, _role: String = "") -> void:
 	var lbl := Label.new()
 	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
 	lbl.text = "%s:\n%s" % [author, text]
-	if role != "":
-		lbl.set_meta("role", role)  
+
 	messages_box.add_child(lbl)
+
+	BPMNData.chat_history.append({
+		"author": author,
+		"text": text
+	})
+
 	_scroll_to_bottom()
 
 func _scroll_to_bottom() -> void:
@@ -84,6 +97,7 @@ func _on_clear() -> void:
 	for x in messages_box.get_children():
 		x.queue_free()
 	status_label.text = "Chat geleert."
+	BPMNData.chat_history.clear()
 	_log("Chat-Fenster geleert.")
 
 func _on_render_last() -> void:
@@ -113,7 +127,49 @@ func _on_render_last() -> void:
 	status_label.text = "Rendering…"
 
 	BPMNData.pending_bpmn = parsed
-	get_tree().change_scene_to_file("res://Scripts/engine/Loader/BpmnJsonLoader.tscn")
-
+	BPMNData.origin = BPMNData.Origin.CHAT
+	get_tree().change_scene_to_file(
+		"res://Scripts/engine/Loader/BpmnJsonLoader.tscn"
+	)
+	
 func _on_back_home() -> void:
 	get_tree().change_scene_to_file("res://ui/home/Home.tscn")
+
+func _restore_chat() -> void:
+	if BPMNData.chat_history.is_empty():
+		return
+
+	for msg in BPMNData.chat_history:
+		var lbl := Label.new()
+		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD
+		lbl.text = "%s:\n%s" % [msg.author, msg.text]
+		messages_box.add_child(lbl)
+
+	_scroll_to_bottom()
+	
+func _on_llm_state_changed(state: ChatController.LlmState) -> void:
+	match state:
+		ChatController.LlmState.IDLE:
+			_set_status("LLM Wartet auf User Input.")
+		ChatController.LlmState.SENDING:
+			status_label.text = "Nachricht wird gesendet"
+		ChatController.LlmState.WAITING:
+			_set_status("LLM analysiert den Prozess")
+		ChatController.LlmState.VALIDATING:
+			status_label.text = "BPMN-JSON wird geprüft"
+		ChatController.LlmState.REFINING:
+			status_label.text = "Modell wird automatisch korrigiert"
+
+func _set_status(text: String) -> void:
+	_base_status = text
+	status_label.text = text
+	_dot_timer = 0.0
+
+func _process(delta: float) -> void:
+	if controller.llm_state != ChatController.LlmState.WAITING:
+		return
+
+
+	_dot_timer += delta
+	var dots := int(_dot_timer) % 4
+	status_label.text = _base_status + ".".repeat(dots)

@@ -1,0 +1,134 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"2",
+			"3",
+			"4",
+			"5",
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "Karton vorbereiten",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Produkt verpackt",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Versandlabel gedruckt",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Dokumentation erstellt",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "Versanddienstleister informiert",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "7",
+		"element_name": "",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"8"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "8",
+		"element_name": "Paket versendet",
+		"element_type": "task",
+		"flows_to": [
+			"9"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "9",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	}
+]
