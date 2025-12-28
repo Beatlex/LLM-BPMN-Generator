@@ -56,7 +56,7 @@ Ermöglicht – bei korrekt eingerichteter LLM-Umgebung – einen **dialogbasier
 ---
 
 ## Einrichtung des Tools
-<img width="1594" height="891" alt="Einstellung" src="https://github.com/user-attachments/assets/cac3cee5-e3cf-4166-b598-da2601d565af" />
+<img width="1589" height="894" alt="EinstellungModell" src="https://github.com/user-attachments/assets/8fd8544e-65ba-49ac-8b9a-380231724fa9" />
 
 1. Im Hauptmenü den Menüpunkt **Einstellungen** auswählen.
 2. Das Tool versucht automatisch, eine Verbindung zum lokalen Ollama-Server herzustellen und verfügbare Modelle zu laden.
