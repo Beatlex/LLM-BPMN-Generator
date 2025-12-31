@@ -1,0 +1,227 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Auftrag erfassen",
+		"element_type": "task",
+		"flows_to": [
+			"2"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"3",
+			"4",
+			"5",
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Bonität prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Lagerbestand prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Betrug prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "Compliance prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "7",
+		"element_name": "",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"8",
+			"9",
+			"10",
+			"11"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "8",
+		"element_name": "",
+		"element_type": "task",
+		"flows_to": [
+			"12"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "9",
+		"element_name": "",
+		"element_type": "task",
+		"flows_to": [
+			"12"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "10",
+		"element_name": "",
+		"element_type": "task",
+		"flows_to": [
+			"12"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "11",
+		"element_name": "",
+		"element_type": "task",
+		"flows_to": [
+			"12"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "12",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"13",
+			"14"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "nicht vollständig",
+			"right": "vollständig erfüllt"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "13",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "14",
+		"element_name": "",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"15",
+			"16"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "abgebrochen",
+			"right": "manuelle Nachbearbeitung"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "15",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "16",
+		"element_name": "",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	}
+]

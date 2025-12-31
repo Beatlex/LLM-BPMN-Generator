@@ -1,0 +1,132 @@
+[
+	{
+		"element_id": "0",
+		"element_name": "Auftrag angelegt",
+		"element_type": "start_event",
+		"flows_to": [
+			"1"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "1",
+		"element_name": "Parallel Split",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"2",
+			"3",
+			"4"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "2",
+		"element_name": "Kundendaten prüfen",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "3",
+		"element_name": "Lagerbestand reservieren",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Rechnung vorbereiten",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "5",
+		"element_name": "Parallel Merge",
+		"element_type": "parallel_gateway",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "Entscheidung Freigabe?",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"7",
+			"9"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "Abgelehnt",
+			"right": "Freigegeben"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "7",
+		"element_name": "Auftrag versenden",
+		"element_type": "task",
+		"flows_to": [
+			"8"
+		],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "8",
+		"element_name": "Auftrag abgeschlossen",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "9",
+		"element_name": "Auftrag abgelehnt",
+		"element_type": "end_event",
+		"flows_to": [],
+		"lane_id": "",
+		"outputs": {
+
+		},
+		"pool_id": ""
+	}
+]

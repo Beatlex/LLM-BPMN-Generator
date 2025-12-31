@@ -1,7 +1,7 @@
 [
 	{
 		"element_id": "0",
-		"element_name": "Start",
+		"element_name": "Geschenk überreichen",
 		"element_type": "start_event",
 		"flows_to": [
 			"1"
@@ -15,11 +15,10 @@
 	},
 	{
 		"element_id": "1",
-		"element_name": "Entscheidung",
-		"element_type": "exclusive_gateway",
+		"element_name": "Geschenk auspacken",
+		"element_type": "task",
 		"flows_to": [
-			"2",
-			"3"
+			"2"
 		],
 		"lane_id": "",
 		"outputs": {
@@ -30,9 +29,10 @@
 	},
 	{
 		"element_id": "2",
-		"element_name": "Antrag erfolgreich",
-		"element_type": "task",
+		"element_name": "Entscheidung: Geschenk toll?",
+		"element_type": "exclusive_gateway",
 		"flows_to": [
+			"3",
 			"4"
 		],
 		"lane_id": "",
@@ -44,7 +44,7 @@
 	},
 	{
 		"element_id": "3",
-		"element_name": "Antrag abgelehnt",
+		"element_name": "Geschenk super",
 		"element_type": "task",
 		"flows_to": [
 			"5"
@@ -58,9 +58,11 @@
 	},
 	{
 		"element_id": "4",
-		"element_name": "Ende Erfolgreich",
-		"element_type": "end_event",
-		"flows_to": [],
+		"element_name": "Geschenk toll",
+		"element_type": "task",
+		"flows_to": [
+			"5"
+		],
 		"lane_id": "",
 		"outputs": {
 			"down": "",
@@ -70,7 +72,35 @@
 	},
 	{
 		"element_id": "5",
-		"element_name": "Ende Abgelehnt",
+		"element_name": "Merge",
+		"element_type": "exclusive_gateway",
+		"flows_to": [
+			"6"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "6",
+		"element_name": "Danke sagen",
+		"element_type": "task",
+		"flows_to": [
+			"7"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "",
+			"right": ""
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "7",
+		"element_name": "Prozess Ende",
 		"element_type": "end_event",
 		"flows_to": [],
 		"lane_id": "",

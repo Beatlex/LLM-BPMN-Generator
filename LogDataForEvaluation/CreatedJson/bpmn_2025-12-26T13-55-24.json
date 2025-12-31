@@ -23,28 +23,42 @@
 		],
 		"lane_id": "",
 		"outputs": {
-			"down": "",
-			"right": ""
+			"down": "3",
+			"right": "2"
 		},
 		"pool_id": ""
 	},
 	{
 		"element_id": "2",
-		"element_name": "Antrag erfolgreich",
+		"element_name": "Geschenk toll",
 		"element_type": "task",
 		"flows_to": [
 			"4"
 		],
 		"lane_id": "",
 		"outputs": {
-			"down": "",
-			"right": ""
+			"down": "4",
+			"right": "4"
 		},
 		"pool_id": ""
 	},
 	{
 		"element_id": "3",
-		"element_name": "Antrag abgelehnt",
+		"element_name": "Geschenk super",
+		"element_type": "task",
+		"flows_to": [
+			"4"
+		],
+		"lane_id": "",
+		"outputs": {
+			"down": "4",
+			"right": "4"
+		},
+		"pool_id": ""
+	},
+	{
+		"element_id": "4",
+		"element_name": "Danke sagen",
 		"element_type": "task",
 		"flows_to": [
 			"5"
@@ -52,25 +66,13 @@
 		"lane_id": "",
 		"outputs": {
 			"down": "",
-			"right": ""
-		},
-		"pool_id": ""
-	},
-	{
-		"element_id": "4",
-		"element_name": "Ende Erfolgreich",
-		"element_type": "end_event",
-		"flows_to": [],
-		"lane_id": "",
-		"outputs": {
-			"down": "",
-			"right": ""
+			"right": "5"
 		},
 		"pool_id": ""
 	},
 	{
 		"element_id": "5",
-		"element_name": "Ende Abgelehnt",
+		"element_name": "Ende",
 		"element_type": "end_event",
 		"flows_to": [],
 		"lane_id": "",
